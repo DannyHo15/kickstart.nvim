@@ -14,11 +14,22 @@ return {
     { '\\', ':Neotree reveal<CR>', desc = 'NeoTree reveal', silent = true },
   },
   opts = {
+    event_handlers = {
+      {
+        event = 'neo_tree_buffer_enter',
+        handler = function(arg)
+          vim.cmd [[
+              setlocal relativenumber
+            ]]
+        end,
+      },
+    },
     filesystem = {
       window = {
         mappings = {
           ['\\'] = 'close_window',
         },
+        scroll = 10, -- Set scroll to 10
       },
     },
   },
