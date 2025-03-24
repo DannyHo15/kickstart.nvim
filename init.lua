@@ -983,10 +983,6 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
             lsp_format = 'fallback',
           }
         end
-        return {
-          timeout_ms = 1000,
-          lsp_format = lsp_format_opt,
-        }
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
