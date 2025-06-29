@@ -171,6 +171,8 @@ vim.opt.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
+vim.opt.laststatus = 3
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -989,10 +991,10 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
       formatters_by_ft = {
         lua = { 'stylua' },
         -- TypeScript/JavaScript
-        typescript = { 'eslint_d' },
+        typescript = { 'prettier' },
         go = { 'gofmt', 'gofumpt' },
         javascript = { 'prettier' },
-        typescriptreact = { 'eslint_d' },
+        typescriptreact = { 'prettier' },
         javascriptreact = { 'prettier' },
         -- HTML/CSS
         html = { 'prettier' },
@@ -1129,7 +1131,7 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
       ---@diagnostic disable-next-line: missing-fields
       require('tokyonight').setup {
         styles = {
-          comments = { italic = false }, -- Disable italics in comments
+          comments = { italic = true }, -- Disable italics in comments
         },
       }
 
@@ -1200,18 +1202,37 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
       ensure_installed = {
         'bash',
         'c',
+        'diff',
         'html',
+        'javascript',
+        'jsdoc',
+        'json',
+        'jsonc',
         'lua',
         'luadoc',
+        'luap',
         'markdown',
         'markdown_inline',
+        'printf',
+        'python',
         'query',
+        'regex',
+        'toml',
+        'tsx',
+        'typescript',
         'vim',
         'vimdoc',
-        'python',
-        'typescript',
-        'javascript',
-        'sql',
+        'xml',
+        'yaml',
+      },
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = '<C-space>',
+          node_incremental = '<C-space>',
+          scope_incremental = false,
+          node_decremental = '<bs>',
+        },
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
@@ -1243,9 +1264,9 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
+  require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.lint',
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --

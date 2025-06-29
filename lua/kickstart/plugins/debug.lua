@@ -5,12 +5,54 @@
 -- Primarily focused on configuring the debugger for Go, but can
 -- be extended to other languages as well. That's why it's called
 -- kickstart.nvim and not kitchen-sink.nvim ;)
-
+local js_based_languages = {
+  'typescript',
+  'javascript',
+  'typescriptreact',
+  'javascriptreact',
+  'vue',
+}
 return {
   -- NOTE: Yes, you can install new plugins here!
   'mfussenegger/nvim-dap',
   -- NOTE: And you can specify dependencies as well
   dependencies = {
+    {
+      'mxsdev/nvim-dap-vscode-js',
+      config = function()
+        ---@diagnostic disable-next-line: missing-fields
+        require('dap-vscode-js').setup {
+          -- Path of node executable. Defaults to $NODE_PATH, and then "node"
+          -- node_path = "node",
+
+          -- Path to vscode-js-debug installation.
+          debugger_path = vim.fn.resolve(vim.fn.stdpath 'data' .. '/mason/packages/js-debug-adapter'),
+
+          -- Command to use to launch the debug server. Takes precedence over "node_path" and "debugger_path"
+          debugger_cmd = { 'js-debug-adapter' },
+
+          -- which adapters to register in nvim-dap
+          adapters = {
+            'chrome',
+            'pwa-node',
+            'node',
+            'pwa-chrome',
+            'pwa-msedge',
+            'pwa-extensionHost',
+            'node-terminal',
+          },
+
+          -- Path for file logging
+          -- log_file_path = "(stdpath cache)/dap_vscode_js.log",
+
+          -- Logging level for output to file. Set to false to disable logging.
+          -- log_file_level = false,
+
+          -- Logging level for output to console. Set to false to disable console output.
+          -- log_console_level = vim.log.levels.ERROR,
+        }
+      end,
+    },
     -- Creates a beautiful debugger UI
     'rcarriga/nvim-dap-ui',
 
@@ -23,6 +65,17 @@ return {
 
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
+    {
+      'microsoft/vscode-js-debug',
+      -- After install, build it and rename the dist directory to out
+      build = 'npm install --legacy-peer-deps --no-save && npx gulp vsDebugServerBundle && rm -rf out && mv dist out',
+      version = '1.*',
+    },
+
+    {
+      'Joakker/lua-json5',
+      build = './install.sh',
+    },
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -80,7 +133,38 @@ return {
   config = function()
     local dap = require 'dap'
     local dapui = require 'dapui'
+    local function find_available_port(start_port)
+      local port = start_port or 9229
+      local socket = vim.loop.new_tcp()
+      local available = false
 
+      while not available and port < start_port + 100 do
+        if socket:bind('127.0.0.1', port) then
+          available = true
+          socket:close()
+          return port
+        end
+        port = port + 1
+      end
+
+      socket:close()
+      return start_port -- Fallback to original if no port is found
+    end
+
+    -- Use the function to get an available port
+    local debug_port = find_available_port(9229)
+
+    -- Set the port in the debugger config
+    if package.loaded['dap-vscode-js'] then
+      package.loaded['dap-vscode-js'].server_port = debug_port
+    end
+
+    -- Explicitly register the adapter with the port
+    dap.adapters['pwa-node'] = {
+      type = 'server',
+      host = 'localhost',
+      port = debug_port,
+    }
     require('mason-nvim-dap').setup {
       -- Makes a best effort to setup the various debuggers with
       -- reasonable debug configurations
@@ -95,9 +179,107 @@ return {
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
         'delve',
-        'chrome',
+        'js-debug-adapter',
       },
     }
+    for _, language in ipairs(js_based_languages) do
+      dap.configurations[language] = {
+        -- Debug single nodejs files
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Launch file',
+          program = '${file}',
+          cwd = vim.fn.getcwd(),
+          sourceMaps = true,
+        },
+        -- Debug nodejs processes (make sure to add --inspect when you run the process)
+        {
+          type = 'pwa-node',
+          request = 'attach',
+          name = 'Attach',
+          processId = require('dap.utils').pick_process,
+          cwd = vim.fn.getcwd(),
+          sourceMaps = true,
+        },
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Debug NestJS',
+          runtimeExecutable = 'npm',
+          runtimeArgs = {
+            'run',
+            'start:debug',
+          },
+          rootPath = '${workspaceFolder}',
+          cwd = '${workspaceFolder}',
+          console = 'integratedTerminal',
+          internalConsoleOptions = 'neverOpen',
+          sourceMaps = true,
+          port = debug_port,
+          skipFiles = { '<node_internals>/**' },
+          resolveSourceMapLocations = {
+            '${workspaceFolder}/**',
+            '!**/node_modules/**',
+          },
+          outFiles = { '${workspaceFolder}/dist/**/*.js' },
+        },
+        -- NestJS Test Debug Configuration
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Debug NestJS Tests',
+          runtimeExecutable = 'npm',
+          runtimeArgs = {
+            'run',
+            'test:debug',
+          },
+          rootPath = '${workspaceFolder}',
+          cwd = '${workspaceFolder}',
+          console = 'integratedTerminal',
+          internalConsoleOptions = 'neverOpen',
+          sourceMaps = true,
+          port = debug_port,
+          skipFiles = { '<node_internals>/**' },
+          resolveSourceMapLocations = {
+            '${workspaceFolder}/**',
+            '!**/node_modules/**',
+          },
+          outFiles = { '${workspaceFolder}/dist/**/*.js' },
+        },
+        -- Debug web applications (client side)
+        {
+          type = 'pwa-chrome',
+          request = 'launch',
+          name = 'Launch & Debug Chrome',
+          url = function()
+            local co = coroutine.running()
+            return coroutine.create(function()
+              vim.ui.input({
+                prompt = 'Enter URL: ',
+                default = 'http://localhost:3000',
+              }, function(url)
+                if url == nil or url == '' then
+                  return
+                else
+                  coroutine.resume(co, url)
+                end
+              end)
+            end)
+          end,
+          webRoot = vim.fn.getcwd(),
+          protocol = 'inspector',
+          sourceMaps = true,
+          userDataDir = false,
+        },
+        -- Divider for the launch.json derived configs
+        {
+          name = '----- ↓ launch.json configs ↓ -----',
+          type = '',
+          request = 'launch',
+        },
+      }
+    end
 
     -- Dap UI setup
     -- For more information, see |:help nvim-dap-ui|
@@ -119,13 +301,55 @@ return {
           disconnect = '⏏',
         },
       },
+      layouts = {
+        {
+          elements = {
+            { id = 'scopes', size = 0.25 },
+            { id = 'breakpoints', size = 0.25 },
+            { id = 'stacks', size = 0.25 },
+            { id = 'watches', size = 0.25 },
+          },
+          size = 40,
+          position = 'left',
+        },
+        {
+          elements = {
+            { id = 'repl', size = 0.5 },
+            { id = 'console', size = 0.5 },
+          },
+          size = 10,
+          position = 'bottom',
+        },
+      },
+      mappings = {},
+      element_mappings = {},
+      expand_lines = true,
+      force_buffers = true,
+      floating = {
+        max_height = nil,
+        max_width = nil,
+        border = 'single',
+        mappings = {
+          close = { 'q', '<Esc>' },
+        },
+      },
+      render = {
+        max_type_length = nil,
+        max_value_lines = 100,
+      },
     }
-
-    -- Change breakpoint icons
-    -- vim.api.nvim_set_hl(0, 'DapBreak', { fg = '#e51400' })
-    -- vim.api.nvim_set_hl(0, 'DapStop', { fg = '#ffcc00' })
-    -- local breakpoint_icons = vim.g.have_nerd_font
-    --     and { Breakpoint = '', BreakpointCondition = '', BreakpointRejected = '', LogPoint = '', Stopped = '' }
+    vim.api.nvim_set_hl(0, 'DapStoppedLine', { default = true, link = 'Visual' })
+    local breakpoint_icons = vim.g.have_nerd_font
+        and { Breakpoint = '', BreakpointCondition = '', BreakpointRejected = '', LogPoint = '', Stopped = '' }
+      or { Breakpoint = '●', BreakpointCondition = '⊜', BreakpointRejected = '⊘', LogPoint = '◆', Stopped = '⭔' }
+    for type, icon in pairs(breakpoint_icons) do
+      local tp = 'Dap' .. type
+      local hl = (type == 'Stopped') and 'DapStop' or 'DapBreak'
+      vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
+    end
+    vim.api.nvim_set_hl(0, 'DapBreak', { fg = '#e51400' })
+    vim.api.nvim_set_hl(0, 'DapStop', { fg = '#ffcc00' })
+    -- local breakpoint_icons = vim.g.have_nerd_font and { Breakpoint = '', BreakpointCondition = '', BreakpointRejected = '', LogPoint = '', Stopped = '' }
     --   or { Breakpoint = '●', BreakpointCondition = '⊜', BreakpointRejected = '⊘', LogPoint = '◆', Stopped = '⭔' }
     -- for type, icon in pairs(breakpoint_icons) do
     --   local tp = 'Dap' .. type
@@ -145,61 +369,13 @@ return {
         detached = vim.fn.has 'win32' == 0,
       },
     }
-    dap.adapters.chrome = {
-      type = 'executable',
-      command = 'node',
-      args = { os.getenv 'HOME' .. '/path/to/vscode-chrome-debug/out/src/chromeDebug.js' }, -- TODO adjust
-    }
+    -- No need to manually define adapters for javascript/typescript
+    -- nvim-dap-vscode-js handles registering adapters from vscode-js-debug
 
-    dap.configurations.javascriptreact = { -- change this to javascript if needed
-      {
-        type = 'chrome',
-        request = 'attach',
-        program = '${file}',
-        cwd = vim.fn.getcwd(),
-        sourceMaps = true,
-        protocol = 'inspector',
-        port = 9222,
-        webRoot = '${workspaceFolder}',
-      },
-    }
+    -- Explicitly remove old adapters to avoid conflicts
 
-    dap.configurations.typescriptreact = { -- change to typescript if needed
-      {
-        type = 'chrome',
-        request = 'attach',
-        program = '${file}',
-        cwd = vim.fn.getcwd(),
-        sourceMaps = true,
-        protocol = 'inspector',
-        port = 9222,
-        webRoot = '${workspaceFolder}',
-      },
-    }
-    dap.configurations.javascript = { -- change this to javascript if needed
-      {
-        type = 'chrome',
-        request = 'attach',
-        program = '${file}',
-        cwd = vim.fn.getcwd(),
-        sourceMaps = true,
-        protocol = 'inspector',
-        port = 9222,
-        webRoot = '${workspaceFolder}',
-      },
-    }
-
-    dap.configurations.typescript = { -- change to typescript if needed
-      {
-        type = 'chrome',
-        request = 'attach',
-        program = '${file}',
-        cwd = vim.fn.getcwd(),
-        sourceMaps = true,
-        protocol = 'inspector',
-        port = 9222,
-        webRoot = '${workspaceFolder}',
-      },
-    }
+    -- We're using the configurations from vscode-js-debug via nvim-dap-vscode-js
+    -- which are set up earlier in this file (lines ~160-210)
+    -- which are set up earlier in this file (lines ~160-210)
   end,
 }

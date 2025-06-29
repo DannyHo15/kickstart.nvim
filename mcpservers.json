@@ -1,0 +1,66 @@
+{
+  "nativeMCPServers": [],
+  "mcpServers": {
+    "github.com/modelcontextprotocol/servers/tree/main/src/filesystem": {
+      "disabled": true,
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/thanhdanh/.mcphub/servers"
+      ],
+      "command": "npx"
+    },
+    "postgres": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/postgres",
+        "postgresql://host.docker.internal:5432"
+      ]
+    },
+    "@21st-dev/magic": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@21st-dev/magic@latest",
+        "API_KEY=\"999c821430619673032af588c28433d37c3785e1e5d0ece8173c1bb701b8c0b2\""
+      ]
+    },
+    "github.com/AgentDeskAI/browser-tools-mcp": {
+      "disabled": false,
+      "disabled_tools": [],
+      "args": ["-y", "@agentdeskai/browser-tools-mcp@latest"],
+      "command": "npx"
+    },
+    "github.com/modelcontextprotocol/servers/tree/main/src/puppeteer": {
+      "env": {
+        "PUPPETEER_LAUNCH_OPTIONS": "{ \"headless\": false }",
+        "ALLOW_DANGEROUS": "false"
+      },
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
+      "command": "npx"
+    },
+    "github.com/modelcontextprotocol/servers/tree/main/src/git": {
+      "disabled": true,
+      "args": [
+        "-m",
+        "mcp_server_git",
+        "--repository",
+        "/Users/thanhdanh/market_ai_agent_apis_system"
+      ],
+      "command": "python"
+    },
+    "github.com/GLips/Figma-Context-MCP": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "figma-developer-mcp",
+        "--figma-api-key=figd_FalggR3pnhkukVy1yzS-4GLppVVlHxEfFm1VEItx",
+        "--stdio"
+      ]
+    }
+  }
+}
+
