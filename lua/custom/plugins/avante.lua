@@ -13,7 +13,7 @@ return {
     providers = {
       copilot = {
         endpoint = 'https://api.openai.com/v1',
-        api_key_name = 'OPENAI_API_KEY', -- The environment variable name for the OpenAI API key
+        -- api_key_name = 'OPENAI_API_KEY', -- The environment variable name for the OpenAI API key
         model = 'gpt-4o',
         extra_request_body = {
           temperature = 0.7,
