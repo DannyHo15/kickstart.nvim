@@ -1,9 +1,9 @@
 return {
   'mhartington/formatter.nvim',
-  version = "*",
+  version = '*',
   config = function()
-    local util = require "formatter.util"
-    require("formatter").setup {
+    local util = require 'formatter.util'
+    require('formatter').setup {
       -- Enable or disable logging
       logging = true,
       -- Set the log level
@@ -15,78 +15,87 @@ return {
         lua = {
           -- "formatter.filetypes.lua" defines default configurations for the
           -- "lua" filetype
-          require("formatter.filetypes.lua").stylua,
+          require('formatter.filetypes.lua').stylua,
 
           -- You can also define your own configuration
           function()
             -- Supports conditional formatting
-            if util.get_current_buffer_file_name() == "special.lua" then
+            if util.get_current_buffer_file_name() == 'special.lua' then
               return nil
             end
 
             -- Full specification of configurations is down below and in Vim help
             -- files
             return {
-              exe = "stylua",
+              exe = 'stylua',
               args = {
-                "--search-parent-directories",
-                "--stdin-filepath",
+                '--search-parent-directories',
+                '--stdin-filepath',
                 util.escape_path(util.get_current_buffer_file_path()),
-                "--",
-                "-",
+                '--',
+                '-',
               },
               stdin = true,
             }
-          end
+          end,
         },
 
         typescript = {
-          require("formatter.filetypes.typescript").eslint_d,
+          require('formatter.filetypes.typescript').eslint_d,
           function()
             return {
-              exe = "prettierd",
-              args = { "--stdin-filepath", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)), '--single-quote' },
-              stdin = true
+              exe = 'prettierd',
+              args = { '--stdin-filepath', vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)), '--single-quote' },
+              stdin = true,
             }
-          end
+          end,
+        },
+        angular = {
+          function()
+            return {
+              exe = 'prettierd',
+              args = { '--stdin-filepath', vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)), '--single-quote' },
+              stdin = true,
+            }
+          end,
         },
         typescriptreact = {
           function()
             return {
-              exe = "prettierd",
-              args = { "--stdin-filepath", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)), '--single-quote' },
-              stdin = true
+              exe = 'prettierd',
+              args = { '--stdin-filepath', vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)), '--single-quote' },
+              stdin = true,
             }
-          end
+          end,
         },
         javascript = {
           -- prettierd
           function()
             return {
-              exe = "prettierd",
+              exe = 'prettierd',
               args = { vim.api.nvim_buf_get_name(0) },
-              stdin = true
+              stdin = true,
             }
-          end
+          end,
         },
         scss = {
           function()
             return {
-              exe = "prettierd",
-              args = { "--stdin-filepath", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)), '--single-quote' },
-              stdin = true
+              exe = 'prettierd',
+              args = { '--stdin-filepath', vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)), '--single-quote' },
+              stdin = true,
             }
-          end
+          end,
         },
 
         -- Use the special "*" filetype for defining formatter configurations on
         -- any filetype
-        ["*"] = {
+        ['*'] = {
           -- "formatter.filetypes.any" defines default configurations for any
           -- filetype
-          require("formatter.filetypes.any").remove_trailing_whitespace
-        }
-      }
+          require('formatter.filetypes.any').remove_trailing_whitespace,
+        },
+      },
     }
-  end
+  end,
 }

@@ -150,7 +150,9 @@ vim.opt.listchars = {
   nbsp = '␣',
 }
 vim.o.expandtab = true
-vim.o.tabstop = 4
+vim.o.tabstop = 2
+vim.o.shiftwidth = 2
+vim.o.smartindent = true
 vim.o.relativenumber = true
 vim.o.swapfile = false
 vim.opt.ttyfast = true
@@ -170,7 +172,6 @@ vim.opt.scrolloff = 10
 -- instead raise a dialog asking if you wish to save the current file(s)
 -- See `:help 'confirm'`
 vim.opt.confirm = true
-
 vim.opt.laststatus = 3
 
 -- [[ Basic Keymaps ]]
@@ -849,11 +850,42 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
               },
             },
           },
+          filetypes = { 'typescript', 'html', 'typescriptreact', 'typescript.tsx', 'htmlangular' },
         },
         eslint = {}, -- Add ESLint language server
         html = {},
         cssls = {},
-        tailwindcss = {},
+        tailwindcss = {
+          filetypes = {
+            'templ',
+            'htmlangular',
+            'vue',
+            'html',
+            'astro',
+            'javascript',
+            'typescript',
+            'react',
+            'html',
+            'javascriptreact',
+            'typescriptreact',
+            'svelte',
+            'css',
+            'angularls',
+          },
+          settings = {
+            tailwindCSS = {
+              experimental = {
+                classRegex = {
+                  'class="([^"]*)"', -- HTML/JSX
+                  'className="([^"]*)"', -- React
+                  'class: "([^"]*)"', -- Svelte
+                  'class\\s*=\\s*{([^}]*)}', -- React with curly braces
+                  '\\bclass\\s*=\\s*"([^"]*)"', -- Templ
+                },
+              },
+            },
+          },
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -985,19 +1017,19 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- TypeScript/JavaScript
-        typescript = { 'prettier' },
         go = { 'gofmt', 'gofumpt' },
+        -- TypeScript/JavaScript
+        typescript = { 'eslint_d', 'prettier' },
         javascript = { 'prettier' },
         typescriptreact = { 'prettier' },
         javascriptreact = { 'prettier' },
         -- HTML/CSS
-        html = { 'prettier' },
+        html = { 'eslint_d', 'prettier', 'prettierd' },
         css = { 'prettier' },
-        scss = { 'prettier' },
+        scss = { 'prettier', 'eslint_d', 'prettierd' },
         -- Angular
-        ['typescript.angular'] = { 'prettier' },
-        ['html.angular'] = { 'prettier' },
+        ['typescript.angular'] = { 'eslint_d', 'prettier', 'prettierd' },
+        ['html.angular'] = { 'eslint_d', 'prettierd', 'prettier' },
         -- JSON
         json = { 'prettier' },
         jsonc = { 'prettier' },
@@ -1005,7 +1037,7 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
         markdown = { 'prettier' },
         yaml = { 'prettier' },
         -- Catch all
-        ['*'] = { 'eslint_d' },
+        ['*'] = { 'prettierd', 'eslint_d', 'prettier' },
       },
     },
   },

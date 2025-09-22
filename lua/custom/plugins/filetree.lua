@@ -17,8 +17,7 @@ return {
     vim.fn.sign_define('DiagnosticSignWarn', { text = ' ', texthl = 'DiagnosticSignWarn' })
     vim.fn.sign_define('DiagnosticSignInfo', { text = ' ', texthl = 'DiagnosticSignInfo' })
     vim.fn.sign_define('DiagnosticSignHint', { text = '', texthl = 'DiagnosticSignHint' })
-    -- NOTE: this is changed from v1.x, which used the old style of highlight groups
-    -- in the form "LspDiagnosticsSignWarning"
+    require('nvim-web-devicons').setup()
     require('neo-tree').setup {
       close_if_last_window = false, -- Close Neo-tree if it is the last window left in the tab
       popup_border_style = 'rounded',
@@ -54,13 +53,13 @@ return {
           expander_highlight = 'NeoTreeExpander',
         },
         icon = {
-          folder_closed = '',
-          folder_open = '',
+          folder_closed = '📁',
+          folder_open = '📂',
           folder_empty = '󰜌',
           folder_empty_open = '󰜌',
           -- The next two settings are only a fallback, if you use nvim-web-devicons and configure default icons there
           -- then these will never be used.
-          default = '*',
+          default = '•', -- Use a simple Unicode dot if Nerd Font is not available
           highlight = 'NeoTreeFileIcon',
         },
         modified = {
@@ -80,7 +79,7 @@ return {
             deleted = '✖', -- this can only be used in the git_status source
             renamed = '󰁕',
             -- Status type
-            untracked = '',
+            untracked = '★',
             ignored = '',
             unstaged = '󰄱',
             staged = '',
