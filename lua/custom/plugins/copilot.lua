@@ -44,6 +44,7 @@ return {
         ['.'] = false,
       },
       copilot_node_command = 'node', -- Node.js version must be > 18.x
+            root_dir = require('lspconfig').util.root_pattern('.git') or vim.fn.getcwd(), -- Fallback to git root or current working directory
       server_opts_overrides = {},
     }
   end,

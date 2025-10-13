@@ -81,11 +81,24 @@ If you experience any errors while trying to install kickstart, run `:checkhealt
 I hope you enjoy your Neovim journey,
 - TJ
 
+
+vim.keymap.set('n', '<leader>ag', function()
+  vim.api.nvim_exec_autocmds('User', { pattern = 'ToggleGitCommitPrompt' })
+end, { desc = 'avante: toggle my prompt' })
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'ToggleGitCommitPrompt',
+  callback = function()
+    require('avante.config').override {
+      system_prompt = 'Create a commit message for the staged changes following the commitizen convention. Ensure the title is concise (max 50 characters), and the message is wrapped at 72 characters. Format the entire message in a code block with language set to `gitcommit`.',
+    }
+  end,
+})
+
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 

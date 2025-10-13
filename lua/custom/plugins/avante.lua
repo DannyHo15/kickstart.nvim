@@ -1,46 +1,91 @@
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'ToggleGitCommitPrompt',
+  callback = function()
+    require('avante.config').override {
+      system_prompt = 'Create a commit message for the staged changes following the commitizen convention. Ensure the title is concise (max 50 characters), and the message is wrapped at 72 characters. Format the entire message in a code block with language set to `gitcommit`.',
+    }
+  end,
+})
+
+vim.keymap.set('n', '<leader>ag', function()
+  vim.api.nvim_exec_autocmds('User', { pattern = 'ToggleGitCommitPrompt' })
+end, { desc = 'avante: toggle my prompt' })
 return {
   'yetone/avante.nvim',
   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
   -- ⚠️ must add this setting! ! !
-  build = vim.fn.has 'win32' and 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false' or 'make',
+  build = vim.fn.has 'win32' ~= 0 and 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false' or 'make',
   event = 'VeryLazy',
-  version = false, -- Never set this value to "*"! Never!
+  tag = 'v0.0.27', -- Never set this value to "*"! Never!
+  lazy = false,
+  version = false, -- use latest stable release
   ---@module 'avante'
   ---@type avante.Config
   opts = {
-    ---@alias Provider "claude" | "openai" | "azure" | "gemini" | "cohere" | "copilot" | string
-    ---@type Provider
-    provider = 'copilot', -- The provider used in Aider mode or in the planning phase of Cursor Planning Mode
     ---@alias Mode "agentic" | "legacy"
     ---@type Mode
-    mode = 'legacy', -- The default mode for interaction. "agentic" uses tools to automatically generate code, "legacy" uses the old planning method to generate code.
+    mode = 'agentic', -- The default mode for interaction. "agentic" uses tools to automatically generate code, "legacy" uses the old planning method to generate code.
     -- WARNING: Since auto-suggestions are a high-frequency operation and therefore expensive,
     -- currently designating it as `copilot` provider is dangerous because: https://github.com/yetone/avante.nvim/issues/1048
     -- Of course, you can reduce the request frequency by increasing `suggestion.debounce`.
-    auto_suggestions_provider = 'claude',
-    instructions_file = 'avante.md',
+    provider = 'copilot',
+    auto_suggestions_provider = 'copilot',
+    instructions_file = 'AGENTS.md',
     providers = {
-      morph = {
-        model = 'morph-v3-large',
-      },
-      claude = {
-        endpoint = 'https://api.anthropic.com',
-        model = 'claude-sonnet-4-20250514',
-        timeout = 30000, -- Timeout in milliseconds
-        extra_request_body = {
-          temperature = 0.75,
-          max_tokens = 20480,
-        },
-      },
-      moonshot = {
-        endpoint = 'https://api.moonshot.ai/v1',
-        model = 'kimi-k2-0711-preview',
+      deepseek = {
+        endpoint = 'https://api.deepseek.ai/v1',
+        model = 'deepseek-ai/DeepSeek-V3.1-Terminus',
+        api_key = 'sk-91df1a86bc9c4be7a0557452ab91d669',
         timeout = 30000, -- Timeout in milliseconds
         extra_request_body = {
           temperature = 0.75,
           max_tokens = 32768,
         },
       },
+      copilot = {
+        model = 'GPT-4.1',
+        extra_request_body = {},
+        auto_select_model = false,
+      },
+      ollama = {
+        model = 'qwen2.5:7b', -- Chỉ định model bạn đã tải
+        __inherited_from = 'openai',
+        endpoint = 'http://127.0.0.1:11434/v1', -- Endpoint mặc định của Ollama
+        extra_request_body = {
+          temperature = 0.75,
+          max_tokens = 20480,
+        },
+      },
+      morph = {
+        model = 'morph-v3-large',
+      },
+      -- claude = {
+      --   endpoint = 'https://api.anthropic.com',
+      --   model = 'claude-sonnet-4-20250514',
+      --   timeout = 30000, -- Timeout in milliseconds
+      --   extra_request_body = {
+      --     temperature = 0.75,
+      --     max_tokens = 20480,
+      --   },
+      -- },
+      -- moonshot = {
+      --   endpoint = 'https://api.moonshot.ai/v1',
+      --   model = 'kimi-k2-0711-preview',
+      --   timeout = 30000, -- Timeout in milliseconds
+      --   extra_request_body = {
+      --     temperature = 0.75,
+      --     max_tokens = 32768,
+      --   },
+      -- },
+      -- deepseek = {
+      --   endpoint = 'https://api.deepseek.ai/v1',
+      --   model = 'deepseek-ai/DeepSeek-V3.1-Terminus',
+      --   timeout = 30000, -- Timeout in milliseconds
+      --   extra_request_body = {
+      --     temperature = 0.75,
+      --     max_tokens = 32768,
+      --   },
+      -- },
     },
     ---Specify the special dual_boost mode
     ---1. enabled: Whether to enable dual_boost mode. Default to false.
@@ -51,6 +96,32 @@ return {
     ---How it works:
     --- When dual_boost is enabled, avante will generate two responses from the first_provider and second_provider respectively. Then use the response from the first_provider as provider1_output and the response from the second_provider as provider2_output. Finally, avante will generate a response based on the prompt and the two reference outputs, with the default Provider as normal.
     ---Note: This is an experimental feature and may not work as expected.
+    keys = {
+      {
+        '<leader>a+',
+        function()
+          local tree_ext = require 'avante.extensions.nvim_tree'
+          tree_ext.add_file()
+        end,
+        desc = 'Select file in NvimTree',
+        ft = 'NvimTree',
+      },
+      {
+        '<leader>a-',
+        function()
+          local tree_ext = require 'avante.extensions.nvim_tree'
+          tree_ext.remove_file()
+        end,
+        desc = 'Deselect file in NvimTree',
+        ft = 'NvimTree',
+      },
+    },
+    opts = {
+      --- other configurations
+      selector = {
+        exclude_auto_select = { 'NvimTree' },
+      },
+    },
     dual_boost = {
       enabled = false,
       first_provider = 'openai',
@@ -58,19 +129,15 @@ return {
       prompt = 'Based on the two reference outputs below, generate a response that incorporates elements from both but reflects your own judgment and unique perspective. Do not provide any explanation, just give the response directly. Reference Output 1: [{{provider1_output}}], Reference Output 2: [{{provider2_output}}]',
       timeout = 60000, -- Timeout in milliseconds
     },
-    behaviour = {
-      enabled_fastapply = true,
-      auto_suggestions = false, -- Experimental stage
+    behavior = {
+      auto_suggestions = false,
       auto_set_highlight_group = true,
       auto_set_keymaps = true,
       auto_apply_diff_after_generation = false,
-      support_paste_from_clipboard = true,
-      minimize_diff = true, -- Whether to remove unchanged lines when applying a code block
-      enable_token_counting = true, -- Whether to enable token counting. Default to true.
-      auto_approve_tool_permissions = true, -- Default: show permission prompts for all tools
-      -- Examples:
-      -- auto_approve_tool_permissions = true,                -- Auto-approve all tools (no prompts)
-      -- auto_approve_tool_permissions = {"bash", "replace_in_file"}, -- Auto-approve specific tools only
+      support_paste_from_clipboard = false,
+      enable_token_counting = false,
+      auto_approve_tool_permissions = false,
+      enable_fastapply = false,
     },
     prompt_logger = { -- logs prompts to disk (timestamped, for replay/debugging)
       enabled = true, -- toggle logging entirely
@@ -384,7 +451,7 @@ return {
   },
   --- @class AvanteHintsConfig
   hints = {
-    enabled = true,
+    enabled = false,
   },
   --- @class AvanteRepoMapConfig
   repo_map = {
