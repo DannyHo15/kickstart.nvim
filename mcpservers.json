@@ -1,0 +1,186 @@
+{
+  "mcpServers": {
+    "@21st-dev/magic": {
+      "args": [
+        "-y",
+        "@21st-dev/magic@latest",
+        "API_KEY=\"999c821430619673032af588c28433d37c3785e1e5d0ece8173c1bb701b8c0b2\""
+      ],
+      "command": "npx"
+    },
+    "antd-components-local": {
+      "args": [
+        "antd-mcp"
+      ],
+      "autoApprove": [
+        "change-component-version",
+        "get-best-practices",
+        "get-component-changelog",
+        "list-components",
+        "get-component-docs",
+        "get-component-examples",
+        "get-component-api"
+      ],
+      "command": "npx"
+    },
+    "browser_tools": {
+      "args": [
+        "@agentdeskai/browser-tools-mcp@latest"
+      ],
+      "autoApprove": [
+        "getConsoleLogs",
+        "getConsoleErrors",
+        "getNetworkErrors",
+        "getNetworkLogs",
+        "takeScreenshot",
+        "getSelectedElement",
+        "wipeLogs",
+        "runAccessibilityAudit",
+        "runPerformanceAudit",
+        "runSEOAudit",
+        "runNextJSAudit",
+        "runDebuggerMode",
+        "runAuditMode",
+        "runBestPracticesAudit"
+      ],
+      "command": "npx"
+    },
+    "figma": {
+      "args": [
+        "-y",
+        "figma-developer-mcp",
+        "--figma-api-key=${FIGMA_API_KEY}",
+        "--stdio"
+      ],
+      "autoApprove": [],
+      "command": "npx",
+      "disabled": false,
+      "env": {
+        "FIGMA_API_KEY": "${FIGMA_API_KEY}"
+      }
+    },
+    "github.com/AgentDeskAI/browser-tools-mcp": {
+      "args": [
+        "-y",
+        "@agentdeskai/browser-tools-mcp@latest"
+      ],
+      "autoApprove": [
+        "getConsoleLogs",
+        "getConsoleErrors",
+        "getNetworkErrors",
+        "getNetworkLogs",
+        "takeScreenshot",
+        "getSelectedElement",
+        "wipeLogs",
+        "runAccessibilityAudit",
+        "runPerformanceAudit",
+        "runSEOAudit",
+        "runNextJSAudit",
+        "runDebuggerMode",
+        "runAuditMode",
+        "runBestPracticesAudit"
+      ],
+      "command": "npx",
+      "disabled": false,
+      "disabled_tools": []
+    },
+    "github.com/GLips/Figma-Context-MCP": {
+      "args": [
+        "-y",
+        "figma-developer-mcp",
+        "--figma-api-key=figd_FalggR3pnhkukVy1yzS-4GLppVVlHxEfFm1VEItx",
+        "--stdio"
+      ],
+      "autoApprove": [
+        "get_figma_data",
+        "download_figma_images"
+      ],
+      "command": "npx"
+    },
+    "github.com/modelcontextprotocol/servers/tree/main/src/filesystem": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/thanhdanh/.mcphub/servers"
+      ],
+      "command": "npx",
+      "disabled": true
+    },
+    "github.com/modelcontextprotocol/servers/tree/main/src/git": {
+      "args": [
+        "-m",
+        "mcp_server_git",
+        "--repository",
+        "/Users/thanhdanh/market_ai_agent_apis_system"
+      ],
+      "command": "python",
+      "disabled": true
+    },
+    "github.com/modelcontextprotocol/servers/tree/main/src/puppeteer": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-puppeteer"
+      ],
+      "autoApprove": [
+        "puppeteer_navigate",
+        "puppeteer_screenshot",
+        "puppeteer_click",
+        "puppeteer_fill",
+        "puppeteer_select",
+        "puppeteer_hover",
+        "puppeteer_evaluate"
+      ],
+      "command": "npx",
+      "env": {
+        "ALLOW_DANGEROUS": "false",
+        "PUPPETEER_LAUNCH_OPTIONS": "{ \"headless\": false }"
+      }
+    },
+    "next-devtools": {
+      "args": [
+        "-y",
+        "next-devtools-mcp@latest"
+      ],
+      "autoApprove": [
+        "nextjs_docs",
+        "browser_eval",
+        "nextjs_runtime",
+        "upgrade_nextjs_16",
+        "enable_cache_components"
+      ],
+      "command": "npx"
+    },
+    "nx-mcp": {
+      "args": [
+        "nx-mcp@latest"
+      ],
+      "autoApprove": [
+        "nx_docs",
+        "nx_available_plugins"
+      ],
+      "command": "npx"
+    }
+  },
+  "nativeMCPServers": {
+    "mcphub": {
+      "autoApprove": [
+        "get_current_servers",
+        "toggle_mcp_server"
+      ]
+    },
+    "neovim": {
+      "autoApprove": [
+        "execute_lua",
+        "execute_command",
+        "read_file",
+        "move_item",
+        "read_multiple_files",
+        "delete_items",
+        "find_files",
+        "list_directory",
+        "write_file",
+        "edit_file"
+      ]
+    }
+  }
+}

@@ -20,14 +20,7 @@ return {
         vim.notify 'MCP Hub is online!'
       end,
     }
-    require('avante').setup {
-      system_prompt = function()
-        local hub = require('mcphub').get_hub_instance()
-        return hub:get_active_servers_prompt()
-      end,
-      custom_tools = {
-        require('mcphub.extensions.avante').mcp_tool(),
-      },
-    }
+    -- Note: Avante setup is handled in lua/custom/plugins/avante.lua
+    -- You can integrate MCP tools there if needed
   end,
 }

@@ -70,24 +70,22 @@ return {
     -- WARNING: Since auto-suggestions are a high-frequency operation and therefore expensive,
     -- currently designating it as `copilot` provider is dangerous because: https://github.com/yetone/avante.nvim/issues/1048
     -- Of course, you can reduce the request frequency by increasing `suggestion.debounce`.
-    provider = 'copilot',
     auto_suggestions_provider = 'copilot',
     instructions_file = 'AGENTS.md',
+    provider = 'copilot',
     providers = {
-      deepseek = {
-        endpoint = 'https://api.deepseek.ai/v1',
-        model = 'deepseek-ai/DeepSeek-V3.1-Terminus',
-        api_key = 'sk-91df1a86bc9c4be7a0557452ab91d669',
-        timeout = 30000, -- Timeout in milliseconds
+      gemini = {
+        api_key_name = 'GEMINI_API_KEY',
+        model = 'gemini-1.5-pro',
+        timeout = 30000,
         extra_request_body = {
           temperature = 0.75,
-          max_tokens = 32768,
+          maxOutputTokens = 8192,
         },
       },
       copilot = {
-        model = 'GPT-4.1',
-        extra_request_body = {},
-        auto_select_model = false,
+        model = 'gpt-4.1-2025-04-14',
+        auto_select_model = true,
       },
       ollama = {
         model = 'qwen2.5:7b', -- Chỉ định model bạn đã tải
@@ -100,6 +98,15 @@ return {
       },
       morph = {
         model = 'morph-v3-large',
+      },
+      mistral = {
+        __inherited_from = 'openai',
+        api_key_name = 'MISTRAL_API_KEY',
+        endpoint = 'https://api.mistral.ai/v1/',
+        model = 'mistral-large-latest',
+        extra_request_body = {
+          max_tokens = 4096, -- to avoid using max_completion_tokens
+        },
       },
       -- claude = {
       --   endpoint = 'https://api.anthropic.com',
@@ -179,7 +186,7 @@ return {
       support_paste_from_clipboard = false,
       enable_token_counting = false,
       auto_approve_tool_permissions = false,
-      enable_fastapply = false,
+      enable_fastapply = true,
     },
     prompt_logger = { -- logs prompts to disk (timestamped, for replay/debugging)
       enabled = true, -- toggle logging entirely
@@ -342,148 +349,6 @@ return {
       filename = 'pasted-%Y-%m-%d-%H-%M-%S',
     },
   },
-  mappings = {
-    ---@class AvanteConflictMappings
-    diff = {
-      ours = 'co',
-      theirs = 'ct',
-      all_theirs = 'ca',
-      both = 'cb',
-      cursor = 'cc',
-      next = ']x',
-      prev = '[x',
-    },
-    suggestion = {
-      accept = '<M-l>',
-      next = '<M-]>',
-      prev = '<M-[>',
-      dismiss = '<C-]>',
-    },
-    jump = {
-      next = ']]',
-      prev = '[[',
-    },
-    submit = {
-      normal = '<CR>',
-      insert = '<C-s>',
-    },
-    cancel = {
-      normal = { '<C-c>', '<Esc>', 'q' },
-      insert = { '<C-c>' },
-    },
-    -- NOTE: The following will be safely set by avante.nvim
-    ask = '<leader>aa',
-    new_ask = '<leader>an',
-    edit = '<leader>ae',
-    refresh = '<leader>ar',
-    focus = '<leader>af',
-    stop = '<leader>aS',
-    toggle = {
-      default = '<leader>at',
-      debug = '<leader>ad',
-      hint = '<leader>ah',
-      suggestion = '<leader>as',
-      repomap = '<leader>aR',
-    },
-    sidebar = {
-      next_prompt = ']p',
-      prev_prompt = '[p',
-      apply_all = 'A',
-      apply_cursor = 'a',
-      retry_user_request = 'r',
-      edit_user_request = 'e',
-      switch_windows = '<Tab>',
-      reverse_switch_windows = '<S-Tab>',
-      remove_file = 'd',
-      add_file = '@',
-      close = { 'q' },
-      ---@alias AvanteCloseFromInput { normal: string | nil, insert: string | nil }
-      ---@type AvanteCloseFromInput | nil
-      close_from_input = nil, -- e.g., { normal = "<Esc>", insert = "<C-d>" }
-    },
-    files = {
-      add_current = '<leader>ac', -- Add current buffer to selected files
-      add_all_buffers = '<leader>aB', -- Add all buffer files to selected files
-    },
-    select_model = '<leader>a?', -- Select model command
-    select_history = '<leader>ah', -- Select history command
-    confirm = {
-      focus_window = '<C-w>f',
-      code = 'c',
-      resp = 'r',
-      input = 'i',
-    },
-  },
-  windows = {
-    ---@alias AvantePosition "right" | "left" | "top" | "bottom" | "smart"
-    ---@type AvantePosition
-    position = 'right',
-    fillchars = 'eob: ',
-    wrap = true, -- similar to vim.o.wrap
-    width = 30, -- default % based on available width in vertical layout
-    height = 30, -- default % based on available height in horizontal layout
-    sidebar_header = {
-      enabled = true, -- true, false to enable/disable the header
-      align = 'center', -- left, center, right for title
-      rounded = true,
-    },
-    spinner = {
-      editing = {
-        '⡀',
-        '⠄',
-        '⠂',
-        '⠁',
-        '⠈',
-        '⠐',
-        '⠠',
-        '⢀',
-        '⣀',
-        '⢄',
-        '⢂',
-        '⢁',
-        '⢈',
-        '⢐',
-        '⢠',
-        '⣠',
-        '⢤',
-        '⢢',
-        '⢡',
-        '⢨',
-        '⢰',
-        '⣰',
-        '⢴',
-        '⢲',
-        '⢱',
-        '⢸',
-        '⣸',
-        '⢼',
-        '⢺',
-        '⢹',
-        '⣹',
-        '⢽',
-        '⢻',
-        '⣻',
-        '⢿',
-        '⣿',
-      },
-      generating = { '·', '✢', '✳', '∗', '✻', '✽' },
-      thinking = { '🤯', '🙄' },
-    },
-    input = {
-      prefix = '> ',
-      height = 6, -- Height of the input window in vertical layout
-    },
-    edit = {
-      border = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
-      start_insert = true, -- Start insert mode when opening the edit window
-    },
-    ask = {
-      floating = true, -- Open the 'AvanteAsk' prompt in a floating window
-      border = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
-      start_insert = true, -- Start insert mode when opening the ask window
-      focus_on_apply = 'ours', -- which diff to focus after applying
-    },
-  },
   diff = {
     autojump = true,
     --- Override the 'timeoutlen' setting while hovering over a diff (see :help timeoutlen).
@@ -505,13 +370,6 @@ return {
     provider = nil,
     -- Options override for custom providers
     provider_opts = {},
-  },
-  selector = {
-    ---@alias avante.SelectorProvider "native" | "fzf_lua" | "mini_pick" | "snacks" | "telescope" | fun(selector: avante.ui.Selector): nil
-    ---@type avante.SelectorProvider
-    provider = 'telescope',
-    provider_opts = {},
-    exclude_auto_select = {}, -- List of items to exclude from auto selection
   },
   input = {
     provider = 'native',
