@@ -852,6 +852,18 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
       local servers = {
         -- clangd = {},
         gopls = {},
+        solidity_ls = {
+          root_dir = require('lspconfig').util.root_pattern('foundry.toml', 'hardhat.config.js', 'truffle-config.js', '.git'),
+          filetypes = { 'solidity', 'sol' },
+          settings = {
+            solidity = {
+              format = {
+                enabled = true,
+                style = 'google',
+              },
+            },
+          },
+        },
         pyright = {},
         angularls = {
           root_dir = require('lspconfig').util.root_pattern('angular.json', 'project.json'),
@@ -1279,6 +1291,9 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
         'vimdoc',
         'xml',
         'yaml',
+        'go',
+        'rust',
+        'solidity',
       },
       incremental_selection = {
         enable = true,

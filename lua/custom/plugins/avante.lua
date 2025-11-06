@@ -58,7 +58,6 @@ return {
   -- ⚠️ must add this setting! ! !
   build = vim.fn.has 'win32' ~= 0 and 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false' or 'make',
   event = 'VeryLazy',
-  tag = 'v0.0.27', -- Never set this value to "*"! Never!
   lazy = false,
   version = false, -- use latest stable release
   ---@module 'avante'
@@ -72,8 +71,36 @@ return {
     -- Of course, you can reduce the request frequency by increasing `suggestion.debounce`.
     auto_suggestions_provider = 'copilot',
     instructions_file = 'AGENTS.md',
-    provider = 'copilot',
+    provider = 'claude-code',
+    acp_providers = {
+      ['gemini-cli'] = {
+        command = 'gemini',
+        args = { '--experimental-acp' },
+        env = {
+          NODE_NO_WARNINGS = '1',
+          GEMINI_API_KEY = os.getenv 'GEMINI_API_KEY',
+        },
+      },
+      ['claude-code'] = {
+        command = 'npx',
+        args = { '@zed-industries/claude-code-acp' },
+        env = {
+          NODE_NO_WARNINGS = '1',
+          ANTHROPIC_API_KEY = os.getenv 'ANTHROPIC_API_KEY',
+        },
+      },
+    },
     providers = {
+      claude = {
+        endpoint = 'https://api.z.ai/api/anthropic',
+        api_key_name = 'ANTHROPIC_API_KEY',
+        model = 'glm-4.6',
+        timeout = 30000, -- Timeout in milliseconds
+        extra_request_body = {
+          temperature = 0.75,
+          max_tokens = 20480,
+        },
+      },
       gemini = {
         api_key_name = 'GEMINI_API_KEY',
         model = 'gemini-1.5-pro',
@@ -86,15 +113,6 @@ return {
       copilot = {
         model = 'gpt-4.1-2025-04-14',
         auto_select_model = true,
-      },
-      ollama = {
-        model = 'qwen2.5:7b', -- Chỉ định model bạn đã tải
-        __inherited_from = 'openai',
-        endpoint = 'http://127.0.0.1:11434/v1', -- Endpoint mặc định của Ollama
-        extra_request_body = {
-          temperature = 0.75,
-          max_tokens = 20480,
-        },
       },
       morph = {
         model = 'morph-v3-large',
@@ -165,11 +183,8 @@ return {
         ft = 'NvimTree',
       },
     },
-    opts = {
-      --- other configurations
-      selector = {
-        exclude_auto_select = { 'NvimTree' },
-      },
+    selector = {
+      exclude_auto_select = { 'NvimTree' },
     },
     dual_boost = {
       enabled = false,
@@ -179,14 +194,14 @@ return {
       timeout = 60000, -- Timeout in milliseconds
     },
     behavior = {
-      auto_suggestions = false,
+      enable_fastapply = true,
+      auto_suggestions = true,
       auto_set_highlight_group = true,
       auto_set_keymaps = true,
       auto_apply_diff_after_generation = false,
-      support_paste_from_clipboard = false,
-      enable_token_counting = false,
-      auto_approve_tool_permissions = false,
-      enable_fastapply = true,
+      support_paste_from_clipboard = true,
+      enable_token_counting = true,
+      auto_approve_tool_permissions = true,
     },
     prompt_logger = { -- logs prompts to disk (timestamped, for replay/debugging)
       enabled = true, -- toggle logging entirely
@@ -247,11 +262,12 @@ return {
     windows = {
       ---@type "right" | "left" | "top" | "bottom"
       position = 'right', -- the position of the sidebar
+      width = 40, -- the width of the sidebar
       wrap = true, -- similar to vim.o.wrap
-      width = 30, -- default % based on available width
+      height = 20,
       sidebar_header = {
         enabled = true, -- true, false to enable/disable the header
-        align = 'center', -- left, center, right for title
+        align = 'left', -- left, center, right for title
         rounded = true,
       },
       spinner = {
@@ -298,14 +314,14 @@ return {
       },
       input = {
         prefix = '> ',
-        height = 8, -- Height of the input window in vertical layout
+        height = 10,
       },
       edit = {
         border = 'rounded',
         start_insert = true, -- Start insert mode when opening the edit window
       },
       ask = {
-        floating = true, -- Open the 'AvanteAsk' prompt in a floating window
+        floating = false, -- Open the 'AvanteAsk' prompt in a floating window
         start_insert = true, -- Start insert mode when opening the ask window
         border = 'rounded',
         ---@type "ours" | "theirs"
@@ -333,57 +349,56 @@ return {
       debounce = 1000,
       throttle = 1000,
     },
-  },
-  highlights = {
-    diff = {
-      current = nil,
-      incoming = nil,
+    history = {
+      max_tokens = 4096,
+      carried_entry_count = nil,
+      storage_path = (vim.fn.stdpath 'state' .. '/avante'),
+      paste = {
+        extension = 'png',
+        filename = 'pasted-%Y-%m-%d-%H-%M-%S',
+      },
     },
-  },
-  history = {
-    max_tokens = 4096,
-    carried_entry_count = nil,
-    storage_path = (vim.fn.stdpath 'state' .. '/avante'),
-    paste = {
-      extension = 'png',
-      filename = 'pasted-%Y-%m-%d-%H-%M-%S',
+    --- @class AvanteRepoMapConfig
+    repo_map = {
+      ignore_patterns = {
+        '%.git',
+        '%.worktree',
+        '__pycache__',
+        'node_modules',
+        '%.DS_Store',
+        '%.png',
+        '%.jpg',
+        '%.jpeg',
+        '%.gif',
+        '%.svg',
+        '%.ico',
+        '%.woff',
+        '%.woff2',
+        '%.ttf',
+        '%.eot',
+        '%.wasm',
+        '%.node',
+        'js-debug',
+        'vscode-chrome-debug',
+      }, -- ignore files matching these
+      negate_patterns = {}, -- negate ignore files matching these.
     },
+    --- @class AvanteFileSelectorConfig
+    file_selector = {
+      provider = nil,
+      -- Options override for custom providers
+      provider_opts = {},
+    },
+    input = {
+      provider = 'native',
+      provider_opts = {},
+    },
+    disabled_tools = {}, ---@type string[]
+    ---@type AvanteLLMToolPublic[] | fun(): AvanteLLMToolPublic[]
+    custom_tools = {},
+    ---@type AvanteSlashCommand[]
+    slash_commands = {},
+    ---@type AvanteShortcut[]
+    shortcuts = {},
   },
-  diff = {
-    autojump = true,
-    --- Override the 'timeoutlen' setting while hovering over a diff (see :help timeoutlen).
-    --- Helps to avoid entering operator-pending mode with diff mappings starting with `c`.
-    --- Disable by setting to -1.
-    override_timeoutlen = 500,
-  },
-  --- @class AvanteHintsConfig
-  hints = {
-    enabled = false,
-  },
-  --- @class AvanteRepoMapConfig
-  repo_map = {
-    ignore_patterns = { '%.git', '%.worktree', '__pycache__', 'node_modules', '%.DS_Store', '%.png', '%.jpg', '%.jpeg', '%.gif', '%.svg', '%.ico', '%.woff', '%.woff2', '%.ttf', '%.eot', '%.wasm', '%.node', 'js-debug', 'vscode-chrome-debug' }, -- ignore files matching these
-    negate_patterns = {}, -- negate ignore files matching these.
-  },
-  --- @class AvanteFileSelectorConfig
-  file_selector = {
-    provider = nil,
-    -- Options override for custom providers
-    provider_opts = {},
-  },
-  input = {
-    provider = 'native',
-    provider_opts = {},
-  },
-  suggestion = {
-    debounce = 1000,
-    throttle = 1000,
-  },
-  disabled_tools = {}, ---@type string[]
-  ---@type AvanteLLMToolPublic[] | fun(): AvanteLLMToolPublic[]
-  custom_tools = {},
-  ---@type AvanteSlashCommand[]
-  slash_commands = {},
-  ---@type AvanteShortcut[]
-  shortcuts = {},
 }
