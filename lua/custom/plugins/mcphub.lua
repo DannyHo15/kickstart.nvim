@@ -8,7 +8,7 @@ return {
   config = function()
     require('mcphub').setup {
       -- Required configuration
-      port = 3001, -- Default hub port
+      port = 3333, -- Default hub port
       config = vim.fn.expand '~/.config/nvim/mcpservers.json', -- Absolute path required
 
       -- Optional customization
@@ -19,6 +19,13 @@ return {
       on_ready = function()
         vim.notify 'MCP Hub is online!'
       end,
+      auto_approve = true,
+      auto_toggle_mcp_servers = true, -- Let LLMs start and stop MCP servers automatically
+      extensions = {
+        avante = {
+          make_slash_commands = true, -- make /slash commands from MCP server prompts
+        },
+      },
     }
     -- Note: Avante setup is handled in lua/custom/plugins/avante.lua
     -- You can integrate MCP tools there if needed

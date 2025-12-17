@@ -105,6 +105,9 @@ vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed
 vim.g.have_nerd_font = true
 
+-- Set LSP log level (options: 'trace', 'debug', 'info', 'warn', 'error', 'off')
+vim.lsp.set_log_level 'warn'
+
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
@@ -865,25 +868,24 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
           },
         },
         pyright = {},
-        angularls = {
-          root_dir = require('lspconfig').util.root_pattern('angular.json', 'project.json'),
-          settings = {
-            angular = {
-              experimental = {
-                lambdaFunctions = true,
-                pipeTransforms = true,
-              },
-            },
-          },
-          filetypes = { 'typescript', 'html', 'typescriptreact', 'typescript.tsx', 'htmlangular' },
-        },
+        -- angularls = {
+        --   root_dir = require('lspconfig').util.root_pattern('angular.json', 'project.json'),
+        --   settings = {
+        --     angular = {
+        --       experimental = {
+        --         lambdaFunctions = true,
+        --         pipeTransforms = true,
+        --       },
+        --     },
+        --   },
+        --   filetypes = { 'typescript.angular', 'htmlangular' }, -- Only for actual Angular files, not regular TypeScript
+        -- },
         eslint = {}, -- Add ESLint language server
         html = {},
         cssls = {},
         tailwindcss = {
           filetypes = {
             'templ',
-            'htmlangular',
             'vue',
             'html',
             'astro',
@@ -895,7 +897,6 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
             'typescriptreact',
             'svelte',
             'css',
-            'angularls',
           },
           settings = {
             tailwindCSS = {
@@ -983,7 +984,6 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
         'prettierd', -- Faster prettier daemon
         'eslint_d', -- Used to lint JavaScript, TypeScript, etc.
         'typescript-language-server', -- TypeScript/JavaScript language server
-        'angular-language-server', -- Angular language server
         'tailwindcss-language-server', -- TailwindCSS language server
         'css-lsp', -- CSS language server
         'html-lsp', -- HTML language server
@@ -993,8 +993,12 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
       }
 
       require('mason-lspconfig').setup {
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-        automatic_installation = false,
+        ensure_installed = {
+          'ts_ls',
+          'eslint',
+          -- 'angularls', -- Only install when working with actual Angular projects
+        }, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
+        automatic_installation = true,
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
@@ -1371,3 +1375,4 @@ require('lazy').setup({ -- NOTE: Plugins can be added with a link (or for a gith
 
 -- the line beneath this is called `modeline`. see `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+

@@ -45,6 +45,12 @@
       ],
       "command": "npx"
     },
+    "fetch": {
+      "args": [
+        "mcp-server-fetch"
+      ],
+      "command": "uvx"
+    },
     "figma": {
       "args": [
         "-y",
@@ -54,10 +60,17 @@
       ],
       "autoApprove": [],
       "command": "npx",
-      "disabled": false,
+      "disabled": true,
       "env": {
         "FIGMA_API_KEY": "${FIGMA_API_KEY}"
       }
+    },
+    "github": {
+      "disabled": false,
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      },
+      "url": "https://api.githubcopilot.com/mcp/"
     },
     "github.com/AgentDeskAI/browser-tools-mcp": {
       "args": [
@@ -81,7 +94,6 @@
         "runBestPracticesAudit"
       ],
       "command": "npx",
-      "disabled": false,
       "disabled_tools": []
     },
     "github.com/GLips/Figma-Context-MCP": {
@@ -97,56 +109,18 @@
       ],
       "command": "npx"
     },
-    "github.com/modelcontextprotocol/servers/tree/main/src/filesystem": {
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/Users/thanhdanh/.mcphub/servers"
-      ],
-      "command": "npx",
-      "disabled": true
-    },
-    "github.com/modelcontextprotocol/servers/tree/main/src/git": {
-      "args": [
-        "-m",
-        "mcp_server_git",
-        "--repository",
-        "/Users/thanhdanh/market_ai_agent_apis_system"
-      ],
-      "command": "python",
-      "disabled": true
-    },
-    "github.com/modelcontextprotocol/servers/tree/main/src/puppeteer": {
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-puppeteer"
-      ],
-      "autoApprove": [
-        "puppeteer_navigate",
-        "puppeteer_screenshot",
-        "puppeteer_click",
-        "puppeteer_fill",
-        "puppeteer_select",
-        "puppeteer_hover",
-        "puppeteer_evaluate"
-      ],
-      "command": "npx",
-      "env": {
-        "ALLOW_DANGEROUS": "false",
-        "PUPPETEER_LAUNCH_OPTIONS": "{ \"headless\": false }"
-      }
-    },
     "next-devtools": {
       "args": [
         "-y",
         "next-devtools-mcp@latest"
       ],
       "autoApprove": [
-        "nextjs_docs",
         "browser_eval",
+        "enable_cache_components",
+        "init",
+        "nextjs_docs",
         "nextjs_runtime",
-        "upgrade_nextjs_16",
-        "enable_cache_components"
+        "upgrade_nextjs_16"
       ],
       "command": "npx"
     },
@@ -157,6 +131,12 @@
       "autoApprove": [
         "nx_docs",
         "nx_available_plugins"
+      ],
+      "command": "npx"
+    },
+    "playwright": {
+      "args": [
+        "@playwright/mcp@latest"
       ],
       "command": "npx"
     }

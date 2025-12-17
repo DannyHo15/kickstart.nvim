@@ -54,6 +54,16 @@ return {
       ft = { 'markdown', 'Avante' },
     },
   },
+  system_prompt = function()
+    local hub = require('mcphub').get_hub_instance()
+    return hub and hub:get_active_servers_prompt() or ''
+  end,
+  -- Using function prevents requiring mcphub before it's loaded
+  custom_tools = function()
+    return {
+      require('mcphub.extensions.avante').mcp_tool(),
+    }
+  end,
   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
   -- ⚠️ must add this setting! ! !
   build = vim.fn.has 'win32' ~= 0 and 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false' or 'make',
@@ -94,7 +104,7 @@ return {
       claude = {
         endpoint = 'https://api.z.ai/api/anthropic',
         api_key_name = 'ANTHROPIC_API_KEY',
-        model = 'glm-4.6',
+        model = 'glm-4.6v',
         timeout = 30000, -- Timeout in milliseconds
         extra_request_body = {
           temperature = 0.75,

@@ -190,6 +190,7 @@ return {
         -- instead of relying on nvim autocmd events.
         window = {
           mappings = {
+            ['<leader>i'] = 'image_wezterm',
             ['<bs>'] = 'navigate_up',
             ['.'] = 'set_root',
             ['H'] = 'toggle_hidden',
@@ -212,6 +213,12 @@ return {
         },
 
         commands = {
+          image_wezterm = function(state)
+            local node = state.tree:get_node()
+            if node.type == 'file' then
+              require('image_preview').PreviewImage(node.path)
+            end
+          end,
           avante_add_files = function(state)
             local node = state.tree:get_node()
             local filepath = node:get_id()
