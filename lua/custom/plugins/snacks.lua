@@ -23,11 +23,20 @@ return {
   },
   keys = {
     {
-      '<leader>',
+      '<leader>tt',
       function()
         require('snacks').terminal()
       end,
       desc = 'Toggle Terminal',
+    },
+    {
+      '<leader>tf',
+      function()
+        require('snacks').terminal(nil, {
+          cwd = vim.fn.expand '%:p:h',
+        })
+      end,
+      desc = 'Terminal in current file directory',
     },
   },
 }

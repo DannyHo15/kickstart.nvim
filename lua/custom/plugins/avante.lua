@@ -10,6 +10,17 @@ vim.api.nvim_create_autocmd('User', {
 vim.keymap.set('n', '<leader>ag', function()
   vim.api.nvim_exec_autocmds('User', { pattern = 'ToggleGitCommitPrompt' })
 end, { desc = 'avante: toggle my prompt' })
+
+-- Toggle auto suggestions
+vim.keymap.set('n', '<leader>as', function()
+  local current = require('avante.config').get().behavior.auto_suggestions
+  require('avante.config').override {
+    behavior = {
+      auto_suggestions = not current,
+    },
+  }
+  vim.notify('Auto-suggestions: ' .. (not current and 'enabled' or 'disabled'), vim.log.levels.INFO)
+end, { desc = 'avante: toggle auto suggestions' })
 return {
   'yetone/avante.nvim',
   dependencies = {
@@ -67,8 +78,8 @@ return {
   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
   -- ⚠️ must add this setting! ! !
   build = vim.fn.has 'win32' ~= 0 and 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false' or 'make',
-  event = 'VeryLazy',
-  lazy = false,
+  event = 'VeryLazy', -- Load sau khi UI đã sẵn sàng
+  lazy = true, -- Chỉ load khi cần
   version = false, -- use latest stable release
   ---@module 'avante'
   ---@type avante.Config
@@ -214,7 +225,7 @@ return {
     },
     behavior = {
       enable_fastapply = true,
-      auto_suggestions = true,
+      auto_suggestions = false, -- Tắt để tránh lỗi khi khởi động
       auto_set_highlight_group = true,
       auto_set_keymaps = true,
       auto_apply_diff_after_generation = false,
