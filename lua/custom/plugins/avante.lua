@@ -80,7 +80,7 @@ return {
     -- currently designating it as `copilot` provider is dangerous because: https://github.com/yetone/avante.nvim/issues/1048
     -- Of course, you can reduce the request frequency by increasing `suggestion.debounce`.
     auto_suggestions_provider = 'copilot',
-    instructions_file = 'AGENTS.md',
+    instructions_file = 'CLAUDE.md',
     provider = 'claude-code',
     acp_providers = {
       ['gemini-cli'] = {
@@ -101,10 +101,19 @@ return {
       },
     },
     providers = {
+      openrouter = {
+        __inherited_from = 'openai',
+        endpoint = 'https://openrouter.ai/api/v1',
+        api_key_name = 'OPENROUTER_API_KEY',
+        model = 'deepseek/deepseek-v3.2',
+        env = {
+          OPENROUTER_API_KEY = os.getenv 'OPENROUTER_API_KEY',
+        },
+      },
       claude = {
         endpoint = 'https://api.z.ai/api/anthropic',
         api_key_name = 'ANTHROPIC_API_KEY',
-        model = 'glm-4.6v',
+        model = 'glm-4.7',
         timeout = 30000, -- Timeout in milliseconds
         extra_request_body = {
           temperature = 0.75,
