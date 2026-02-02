@@ -125,6 +125,7 @@ return {
         endpoint = 'https://api.z.ai/api/anthropic',
         api_key_name = 'ANTHROPIC_API_KEY',
         model = 'glm-4.7',
+        auto_suggestions = true,
         timeout = 30000, -- Timeout in milliseconds
         extra_request_body = {
           temperature = 0.75,

@@ -4,7 +4,7 @@
       "args": [
         "-y",
         "@21st-dev/magic@latest",
-        "API_KEY=\"999c821430619673032af588c28433d37c3785e1e5d0ece8173c1bb701b8c0b2\""
+        "API_KEY=\"${_21ST_DEV_API_KEY}\""
       ],
       "command": "npx"
     },
@@ -12,37 +12,14 @@
       "args": [
         "antd-mcp"
       ],
-      "autoApprove": [
-        "change-component-version",
-        "get-best-practices",
-        "get-component-changelog",
-        "list-components",
-        "get-component-docs",
-        "get-component-examples",
-        "get-component-api"
-      ],
+      "autoApprove": [],
       "command": "npx"
     },
     "browser_tools": {
       "args": [
         "@agentdeskai/browser-tools-mcp@latest"
       ],
-      "autoApprove": [
-        "getConsoleLogs",
-        "getConsoleErrors",
-        "getNetworkErrors",
-        "getNetworkLogs",
-        "takeScreenshot",
-        "getSelectedElement",
-        "wipeLogs",
-        "runAccessibilityAudit",
-        "runPerformanceAudit",
-        "runSEOAudit",
-        "runNextJSAudit",
-        "runDebuggerMode",
-        "runAuditMode",
-        "runBestPracticesAudit"
-      ],
+      "autoApprove": [],
       "command": "npx"
     },
     "fetch": {
@@ -77,22 +54,7 @@
         "-y",
         "@agentdeskai/browser-tools-mcp@latest"
       ],
-      "autoApprove": [
-        "getConsoleLogs",
-        "getConsoleErrors",
-        "getNetworkErrors",
-        "getNetworkLogs",
-        "takeScreenshot",
-        "getSelectedElement",
-        "wipeLogs",
-        "runAccessibilityAudit",
-        "runPerformanceAudit",
-        "runSEOAudit",
-        "runNextJSAudit",
-        "runDebuggerMode",
-        "runAuditMode",
-        "runBestPracticesAudit"
-      ],
+      "autoApprove": [],
       "command": "npx",
       "disabled_tools": []
     },
@@ -100,13 +62,10 @@
       "args": [
         "-y",
         "figma-developer-mcp",
-        "--figma-api-key=figd_FalggR3pnhkukVy1yzS-4GLppVVlHxEfFm1VEItx",
+        "--figma-api-key=${FIGMA_API_KEY}",
         "--stdio"
       ],
-      "autoApprove": [
-        "get_figma_data",
-        "download_figma_images"
-      ],
+      "autoApprove": [],
       "command": "npx"
     },
     "next-devtools": {
@@ -128,9 +87,13 @@
       "args": [
         "nx-mcp@latest"
       ],
-      "autoApprove": [
-        "nx_docs",
-        "nx_available_plugins"
+      "autoApprove": [],
+      "command": "npx"
+    },
+    "shadcn": {
+      "args": [
+        "shadcn@latest",
+        "mcp"
       ],
       "command": "npx"
     },
@@ -143,24 +106,10 @@
   },
   "nativeMCPServers": {
     "mcphub": {
-      "autoApprove": [
-        "get_current_servers",
-        "toggle_mcp_server"
-      ]
+      "autoApprove": []
     },
     "neovim": {
-      "autoApprove": [
-        "execute_lua",
-        "execute_command",
-        "read_file",
-        "move_item",
-        "read_multiple_files",
-        "delete_items",
-        "find_files",
-        "list_directory",
-        "write_file",
-        "edit_file"
-      ]
+      "autoApprove": []
     }
   }
 }
