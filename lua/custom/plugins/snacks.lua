@@ -11,7 +11,13 @@ return {
     words = { enabled = false },
     dashboard = { enabled = false },
     explorer = { enabled = false },
-    input = { enabled = true },
+    input = {
+      enabled = true,
+      win = {
+        -- Ensure suggestions appear above command line
+        zindex = 300,  -- Increased from 200 to avoid overlap with cmdline
+      },
+    },
     picker = { enabled = false },
     scope = { enabled = false },
     scroll = { enabled = true },

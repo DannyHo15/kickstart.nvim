@@ -8,6 +8,18 @@ return {
       use_nvim_cmp_as_default = true,
       nerd_font_variant = 'mono',
     },
+    windows = {
+      autocomplete = {
+        -- Higher zindex to appear above command line
+        zindex = 300,
+      },
+      documentation = {
+        zindex = 300,
+      },
+      signature_help = {
+        zindex = 300,
+      },
+    },
     sources = {
       default = { 'lsp', 'path', 'snippets', 'buffer' },
     },
@@ -17,9 +29,9 @@ return {
       end,
       active = function(filter)
         if filter and filter.direction then
-          return require('luasnip').session.in_direction(filter.direction) > 0
+          return require('luasnip').jumpable(filter.direction)
         else
-          return require('luasnip').session and require('luasnip').session.current() ~= nil
+          return require('luasnip').in_snippet()
         end
       end,
       jump = function(direction)

@@ -7,9 +7,12 @@ vim.api.nvim_create_autocmd('User', {
   end,
 })
 
-vim.keymap.set('n', '<leader>ag', function()
-  vim.api.nvim_exec_autocmds('User', { pattern = 'ToggleGitCommitPrompt' })
-end, { desc = 'avante: toggle my prompt' })
+vim.keymap.set(
+  'n',
+  '<leader>ag',
+  function() vim.api.nvim_exec_autocmds('User', { pattern = 'ToggleGitCommitPrompt' }) end,
+  { desc = 'avante: toggle my prompt' }
+)
 
 -- Toggle auto suggestions
 vim.keymap.set('n', '<leader>as', function()
@@ -21,6 +24,18 @@ vim.keymap.set('n', '<leader>as', function()
   }
   vim.notify('Auto-suggestions: ' .. (not current and 'enabled' or 'disabled'), vim.log.levels.INFO)
 end, { desc = 'avante: toggle auto suggestions' })
+-- Tắt blink.cmp cho AvanteInput buffers
+-- Avante slash commands CHỈ hoạt động với nvim-cmp, KHÔNG hỗ trợ blink.cmp
+-- Xem: https://github.com/yetone/avante.nvim/issues/959
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'AvanteInput',
+  callback = function()
+    -- Tắt blink.cmp trong AvanteInput để tránh xung đột
+    pcall(function()
+      require('blink.cmp').disable()
+    end)
+  end,
+})
 return {
   'yetone/avante.nvim',
   dependencies = {
@@ -29,7 +44,36 @@ return {
     --- The below dependencies are optional,
     'echasnovski/mini.pick', -- for file_selector provider mini.pick
     'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
-    'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
+    {
+      'hrsh7th/nvim-cmp',
+      -- Ensure nvim-cmp is loaded when Avante loads
+      lazy = true,
+      config = function()
+        -- Minimal config for nvim-cmp to work with Avante
+        local cmp = require 'cmp'
+        cmp.setup {
+          enabled = function()
+            -- Only enable in AvanteInput buffers
+            return vim.bo.filetype == 'AvanteInput'
+          end,
+          snippet = {
+            expand = function(args)
+              require('luasnip').lsp_expand(args.body)
+            end,
+          },
+          mapping = cmp.mapping.preset.insert {
+            ['<CR>'] = cmp.mapping.confirm { select = true },
+            ['<C-e>'] = cmp.mapping.close(),
+            ['<Tab>'] = cmp.mapping.select_next_item(),
+            ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          },
+          sources = cmp.config.sources {
+            { name = 'avante_commands' },
+            { name = 'avante_mentions' },
+          },
+        }
+      end,
+    }, -- autocompletion for avante commands and mentions
     'ibhagwan/fzf-lua', -- for file_selector provider fzf
     'stevearc/dressing.nvim', -- for input provider dressing
     'folke/snacks.nvim', -- for input provider snacks
@@ -94,14 +138,6 @@ return {
     instructions_file = 'CLAUDE.md',
     provider = 'claude-code',
     acp_providers = {
-      ['gemini-cli'] = {
-        command = 'gemini',
-        args = { '--experimental-acp' },
-        env = {
-          NODE_NO_WARNINGS = '1',
-          GEMINI_API_KEY = os.getenv 'GEMINI_API_KEY',
-        },
-      },
       ['claude-code'] = {
         command = 'npx',
         args = { '@zed-industries/claude-code-acp' },
@@ -345,6 +381,11 @@ return {
       input = {
         prefix = '> ',
         height = 10,
+        ---@type snacks.win.Opts
+        opts = {
+          zindex = 300, -- Higher than default to avoid overlap with command line
+          border = 'rounded',
+        },
       },
       edit = {
         border = 'rounded',
@@ -420,7 +461,7 @@ return {
       provider_opts = {},
     },
     input = {
-      provider = 'native',
+      provider = 'cmp',
       provider_opts = {},
     },
     disabled_tools = {}, ---@type string[]
