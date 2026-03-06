@@ -31,13 +31,12 @@ vim.api.nvim_create_autocmd('FileType', {
   pattern = 'AvanteInput',
   callback = function()
     -- Tắt blink.cmp trong AvanteInput để tránh xung đột
-    pcall(function()
-      require('blink.cmp').disable()
-    end)
+    pcall(function() require('blink.cmp').disable() end)
   end,
 })
 return {
   'yetone/avante.nvim',
+  branch = 'main',
   dependencies = {
     'nvim-lua/plenary.nvim',
     'MunifTanjim/nui.nvim',
@@ -57,9 +56,7 @@ return {
             return vim.bo.filetype == 'AvanteInput'
           end,
           snippet = {
-            expand = function(args)
-              require('luasnip').lsp_expand(args.body)
-            end,
+            expand = function(args) require('luasnip').lsp_expand(args.body) end,
           },
           mapping = cmp.mapping.preset.insert {
             ['<CR>'] = cmp.mapping.confirm { select = true },

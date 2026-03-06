@@ -26,10 +26,7 @@ return {
           -- node_path = "node",
 
           -- Path to vscode-js-debug installation.
-          debugger_path = vim.fn.resolve(vim.fn.stdpath 'data' .. '/mason/packages/js-debug-adapter'),
-
-          -- Command to use to launch the debug server. Takes precedence over "node_path" and "debugger_path"
-          debugger_cmd = { 'js-debug-adapter' },
+          debugger_path = vim.fn.resolve(vim.fn.stdpath 'data' .. '/lazy/vscode-js-debug'),
 
           -- which adapters to register in nvim-dap
           adapters = {
@@ -119,38 +116,6 @@ return {
   config = function()
     local dap = require 'dap'
     local dapui = require 'dapui'
-    local function find_available_port(start_port)
-      local port = start_port or 9229
-      local socket = vim.loop.new_tcp()
-      local available = false
-
-      while not available and port < start_port + 100 do
-        if socket:bind('127.0.0.1', port) then
-          available = true
-          socket:close()
-          return port
-        end
-        port = port + 1
-      end
-
-      socket:close()
-      return start_port -- Fallback to original if no port is found
-    end
-
-    -- Use the function to get an available port
-    local debug_port = find_available_port(9229)
-
-    -- Set the port in the debugger config
-    if package.loaded['dap-vscode-js'] then
-      package.loaded['dap-vscode-js'].server_port = debug_port
-    end
-
-    -- Explicitly register the adapter with the port
-    dap.adapters['pwa-node'] = {
-      type = 'server',
-      host = 'localhost',
-      port = debug_port,
-    }
     require('mason-nvim-dap').setup {
       -- Makes a best effort to setup the various debuggers with
       -- reasonable debug configurations
@@ -163,11 +128,22 @@ return {
       -- You'll need to check that you have the required things installed
       -- online, please don't ask me how to install them :)
       ensure_installed = {
-        -- Update this to ensure that you have the debuggers for the langs you want
         'delve',
-        'js-debug-adapter',
       },
     }
+    -- Register JS debug adapters directly using vscode-js-debug
+    local js_debug_server = vim.fn.stdpath 'data' .. '/lazy/vscode-js-debug/out/src/vsDebugServer.js'
+    for _, adapter in ipairs { 'pwa-node', 'node', 'pwa-chrome', 'pwa-msedge', 'pwa-extensionHost', 'node-terminal' } do
+      dap.adapters[adapter] = {
+        type = 'server',
+        host = '127.0.0.1',
+        port = '${port}',
+        executable = {
+          command = 'node',
+          args = { js_debug_server, '${port}' },
+        },
+      }
+    end
     for _, language in ipairs(js_based_languages) do
       dap.configurations[language] = {
         -- Debug single nodejs files
@@ -202,7 +178,7 @@ return {
           console = 'integratedTerminal',
           internalConsoleOptions = 'neverOpen',
           sourceMaps = true,
-          port = debug_port,
+          port = 9229,
           skipFiles = { '<node_internals>/**' },
           resolveSourceMapLocations = {
             '${workspaceFolder}/**',
@@ -225,7 +201,7 @@ return {
           console = 'integratedTerminal',
           internalConsoleOptions = 'neverOpen',
           sourceMaps = true,
-          port = debug_port,
+          port = 9229,
           skipFiles = { '<node_internals>/**' },
           resolveSourceMapLocations = {
             '${workspaceFolder}/**',

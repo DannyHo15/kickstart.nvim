@@ -9,9 +9,7 @@
       "command": "npx"
     },
     "antd-components-local": {
-      "args": [
-        "antd-mcp"
-      ],
+      "args": ["antd-mcp"],
       "autoApprove": [
         "change-component-version",
         "get-best-practices",
@@ -24,9 +22,7 @@
       "command": "npx"
     },
     "browser_tools": {
-      "args": [
-        "@agentdeskai/browser-tools-mcp@latest"
-      ],
+      "args": ["@agentdeskai/browser-tools-mcp@latest"],
       "autoApprove": [
         "getConsoleLogs",
         "getConsoleErrors",
@@ -46,9 +42,7 @@
       "command": "npx"
     },
     "fetch": {
-      "args": [
-        "mcp-server-fetch"
-      ],
+      "args": ["mcp-server-fetch"],
       "command": "uvx"
     },
     "figma": {
@@ -66,17 +60,14 @@
       }
     },
     "github": {
-      "disabled": false,
+      "disabled": true,
       "headers": {
         "Authorization": "Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}"
       },
       "url": "https://api.githubcopilot.com/mcp/"
     },
     "github.com/AgentDeskAI/browser-tools-mcp": {
-      "args": [
-        "-y",
-        "@agentdeskai/browser-tools-mcp@latest"
-      ],
+      "args": ["-y", "@agentdeskai/browser-tools-mcp@latest"],
       "autoApprove": [
         "getConsoleLogs",
         "getConsoleErrors",
@@ -103,17 +94,11 @@
         "--figma-api-key=figd_FalggR3pnhkukVy1yzS-4GLppVVlHxEfFm1VEItx",
         "--stdio"
       ],
-      "autoApprove": [
-        "get_figma_data",
-        "download_figma_images"
-      ],
+      "autoApprove": ["get_figma_data", "download_figma_images"],
       "command": "npx"
     },
     "next-devtools": {
-      "args": [
-        "-y",
-        "next-devtools-mcp@latest"
-      ],
+      "args": ["-y", "next-devtools-mcp@latest"],
       "autoApprove": [
         "browser_eval",
         "enable_cache_components",
@@ -125,28 +110,18 @@
       "command": "npx"
     },
     "nx-mcp": {
-      "args": [
-        "nx-mcp@latest"
-      ],
-      "autoApprove": [
-        "nx_docs",
-        "nx_available_plugins"
-      ],
+      "args": ["nx-mcp@latest"],
+      "autoApprove": ["nx_docs", "nx_available_plugins"],
       "command": "npx"
     },
     "playwright": {
-      "args": [
-        "@playwright/mcp@latest"
-      ],
+      "args": ["@playwright/mcp@latest"],
       "command": "npx"
     }
   },
   "nativeMCPServers": {
     "mcphub": {
-      "autoApprove": [
-        "get_current_servers",
-        "toggle_mcp_server"
-      ]
+      "autoApprove": ["get_current_servers", "toggle_mcp_server"]
     },
     "neovim": {
       "autoApprove": [

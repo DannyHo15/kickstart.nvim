@@ -3,7 +3,10 @@ return {
   'saghen/blink.cmp',
   version = '*',
   opts = {
-    keymap = { preset = 'default' },
+    keymap = {
+      preset = 'default',
+      ['<CR>'] = { 'accept', 'fallback' },
+    },
     appearance = {
       use_nvim_cmp_as_default = true,
       nerd_font_variant = 'mono',
@@ -24,19 +27,7 @@ return {
       default = { 'lsp', 'path', 'snippets', 'buffer' },
     },
     snippets = {
-      expand = function(snippet)
-        require('luasnip').lsp_expand(snippet.body)
-      end,
-      active = function(filter)
-        if filter and filter.direction then
-          return require('luasnip').jumpable(filter.direction)
-        else
-          return require('luasnip').in_snippet()
-        end
-      end,
-      jump = function(direction)
-        require('luasnip').jump(direction)
-      end,
+      preset = 'luasnip',
     },
   },
   opts_extend = { 'sources.default' },
