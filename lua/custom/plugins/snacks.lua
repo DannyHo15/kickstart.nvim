@@ -15,7 +15,7 @@ return {
       enabled = true,
       win = {
         -- Ensure suggestions appear above command line
-        zindex = 300,  -- Increased from 200 to avoid overlap with cmdline
+        zindex = 300, -- Increased from 200 to avoid overlap with cmdline
       },
     },
     picker = { enabled = false },
@@ -30,9 +30,7 @@ return {
   keys = {
     {
       '<leader>tt',
-      function()
-        require('snacks').terminal()
-      end,
+      function() require('snacks').terminal() end,
       desc = 'Toggle Terminal',
     },
     {

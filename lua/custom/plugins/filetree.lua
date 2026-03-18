@@ -13,10 +13,10 @@ return {
     vim.opt.scrolloff = 10
 
     -- If you want icons for diagnostic errors, you'll need to define them somewhere:
-    vim.fn.sign_define('DiagnosticSignError', { text = ' ', texthl = 'DiagnosticSignError' })
-    vim.fn.sign_define('DiagnosticSignWarn', { text = ' ', texthl = 'DiagnosticSignWarn' })
-    vim.fn.sign_define('DiagnosticSignInfo', { text = ' ', texthl = 'DiagnosticSignInfo' })
-    vim.fn.sign_define('DiagnosticSignHint', { text = '', texthl = 'DiagnosticSignHint' })
+    vim.fn.sign_define('DiagnosticSignError', { text = '❌', texthl = 'DiagnosticSignError' })
+    vim.fn.sign_define('DiagnosticSignWarn', { text = '⚠️', texthl = 'DiagnosticSignWarn' })
+    vim.fn.sign_define('DiagnosticSignInfo', { text = 'ℹ️', texthl = 'DiagnosticSignInfo' })
+    vim.fn.sign_define('DiagnosticSignHint', { text = '😉', texthl = 'DiagnosticSignHint' })
     require('nvim-web-devicons').setup()
     require('neo-tree').setup {
       close_if_last_window = false, -- Close Neo-tree if it is the last window left in the tab
@@ -55,8 +55,8 @@ return {
         icon = {
           folder_closed = '📁',
           folder_open = '📂',
-          folder_empty = '󰜌',
-          folder_empty_open = '󰜌',
+          folder_empty = '💩',
+          folder_empty_open = '💩',
           -- The next two settings are only a fallback, if you use nvim-web-devicons and configure default icons there
           -- then these will never be used.
           default = '•', -- Use a simple Unicode dot if Nerd Font is not available
@@ -215,9 +215,7 @@ return {
         commands = {
           image_wezterm = function(state)
             local node = state.tree:get_node()
-            if node.type == 'file' then
-              require('image_preview').PreviewImage(node.path)
-            end
+            if node.type == 'file' then require('image_preview').PreviewImage(node.path) end
           end,
           avante_add_files = function(state)
             local node = state.tree:get_node()
@@ -236,9 +234,7 @@ return {
             sidebar.file_selector:add_selected_file(relative_path)
 
             -- remove neo tree buffer
-            if not open then
-              sidebar.file_selector:remove_selected_file 'neo-tree filesystem [1]'
-            end
+            if not open then sidebar.file_selector:remove_selected_file 'neo-tree filesystem [1]' end
           end,
         }, -- Add a custom command or override a global one using the same function name
       },

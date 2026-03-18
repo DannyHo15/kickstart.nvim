@@ -98,7 +98,7 @@ vim.api.nvim_create_autocmd('User', {
     }
   end,
 })
-
+vim.g.lazydev_enabled = true
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
@@ -130,9 +130,7 @@ vim.opt.showcmd = false -- Hide command characters (like /) from showing
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.schedule(function()
-  vim.opt.clipboard = 'unnamedplus'
-end)
+vim.schedule(function() vim.opt.clipboard = 'unnamedplus' end)
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -275,9 +273,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', {
     clear = true,
   }),
-  callback = function()
-    vim.highlight.on_yank()
-  end,
+  callback = function() vim.highlight.on_yank() end,
 })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -360,12 +356,8 @@ require('lazy').setup({
 
         -- Navigation
         map({ 'n', 'v' }, ']c', function()
-          if vim.wo.diff then
-            return ']c'
-          end
-          vim.schedule(function()
-            gs.next_hunk()
-          end)
+          if vim.wo.diff then return ']c' end
+          vim.schedule(function() gs.next_hunk() end)
           return '<Ignore>'
         end, {
           expr = true,
@@ -373,12 +365,8 @@ require('lazy').setup({
         })
 
         map({ 'n', 'v' }, '[c', function()
-          if vim.wo.diff then
-            return '[c'
-          end
-          vim.schedule(function()
-            gs.prev_hunk()
-          end)
+          if vim.wo.diff then return '[c' end
+          vim.schedule(function() gs.prev_hunk() end)
           return '<Ignore>'
         end, {
           expr = true,
@@ -387,14 +375,10 @@ require('lazy').setup({
 
         -- Actions
         -- visual mode
-        map('v', '<leader>hs', function()
-          gs.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
-        end, {
+        map('v', '<leader>hs', function() gs.stage_hunk { vim.fn.line '.', vim.fn.line 'v' } end, {
           desc = 'stage git hunk',
         })
-        map('v', '<leader>hr', function()
-          gs.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
-        end, {
+        map('v', '<leader>hr', function() gs.reset_hunk { vim.fn.line '.', vim.fn.line 'v' } end, {
           desc = 'reset git hunk',
         })
         -- normal mode
@@ -426,9 +410,7 @@ require('lazy').setup({
         map('n', '<leader>hd', gs.diffthis, {
           desc = 'git diff against index',
         })
-        map('n', '<leader>hD', function()
-          gs.diffthis '~'
-        end, {
+        map('n', '<leader>hD', function() gs.diffthis '~' end, {
           desc = 'git diff against last commit',
         })
 
@@ -639,14 +621,19 @@ require('lazy').setup({
 
       -- It's also possible to pass additional configuration options.
       --  See `:help telescope.builtin.live_grep()` for information about particular keys
-      vim.keymap.set('n', '<leader>s/', function()
-        builtin.live_grep {
-          grep_open_files = true,
-          prompt_title = 'Live Grep in Open Files',
+      vim.keymap.set(
+        'n',
+        '<leader>s/',
+        function()
+          builtin.live_grep {
+            grep_open_files = true,
+            prompt_title = 'Live Grep in Open Files',
+          }
+        end,
+        {
+          desc = '[S]earch [/] in Open Files',
         }
-      end, {
-        desc = '[S]earch [/] in Open Files',
-      })
+      )
 
       -- Shortcut for searching your Neovim configuration files
       vim.keymap.set('n', '<leader>sn', function()
@@ -832,9 +819,7 @@ require('lazy').setup({
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       -- Safely get blink.cmp capabilities if available
       local ok, blink_cmp = pcall(require, 'blink.cmp')
-      if ok then
-        capabilities = vim.tbl_deep_extend('force', capabilities, blink_cmp.get_lsp_capabilities())
-      end
+      if ok then capabilities = vim.tbl_deep_extend('force', capabilities, blink_cmp.get_lsp_capabilities()) end
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -970,7 +955,7 @@ require('lazy').setup({
         'html-lsp', -- HTML language server
         -- You can add other tools here that you want Mason to install
       })
-      
+
       require('mason-tool-installer').setup {
         ensure_installed = ensure_installed,
       }
@@ -1066,110 +1051,110 @@ require('lazy').setup({
       },
     },
   },
---   { -- Autocompletion
---     'hrsh7th/nvim-cmp',
---     event = 'InsertEnter',
---     dependencies = { -- Snippet Engine & its associated nvim-cmp source
---       {
---         'L3MON4D3/LuaSnip',
---         build = (function()
---           -- Build Step is needed for regex support in snippets.
---           -- This step is not supported in many windows environments.
---           -- Remove the below condition to re-enable on windows.
---           if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then return end
---           return 'make install_jsregexp'
---         end)(),
---         dependencies = {
---           -- `friendly-snippets` contains a variety of premade snippets.
---           --    See the README about individual language/framework/plugin snippets:
---           --    https://github.com/rafamadriz/friendly-snippets
---           {
---             'rafamadriz/friendly-snippets',
---             config = function()
---               require('luasnip.loaders.from_vscode').lazy_load()
---             end,
---           },
---         },
---       },
---       'saadparwaiz1/cmp_luasnip', -- Adds other completion capabilities.
---       --  nvim-cmp does not ship with all sources by default. They are split
---       --  into multiple repos for maintenance purposes.
---       'hrsh7th/cmp-nvim-lsp',
---       'hrsh7th/cmp-path',
---       'hrsh7th/cmp-nvim-lsp-signature-help',
---     },
---     config = function()
---       -- See `:help cmp`
---       local cmp = require 'cmp'
---       local luasnip = require 'luasnip'
---       luasnip.config.setup {}
--- 
---       cmp.setup {
---         snippet = {
---           expand = function(args)
---             luasnip.lsp_expand(args.body)
---           end,
---         },
---         completion = {
---           completeopt = 'menu,menuone,noinsert',
---         },
--- 
---         -- For an understanding of why these mappings were
---         -- chosen, you will need to read `:help ins-completion`
---         --
---         -- No, but seriously. Please read `:help ins-completion`, it is really good!
---         mapping = cmp.mapping.preset.insert {
---           -- Select the [n]ext item
---           ['<C-n>'] = cmp.mapping.select_next_item(),
---           -- Select the [p]revious item
---           ['<C-p>'] = cmp.mapping.select_prev_item(),
--- 
---           -- Scroll the documentation window [b]ack / [f]orward
---           ['<C-d>'] = cmp.mapping.scroll_docs(-4),
---           ['<C-u>'] = cmp.mapping.scroll_docs(4),
--- 
---           -- Accept ([y]es) the completion.
---           --  This will auto-import if your LSP supports it.
---           --  This will expand snippets if the LSP sent a snippet.
---           ['<C-y>'] = cmp.mapping.confirm {
---             select = true,
---           },
---           ['<CR>'] = cmp.mapping.confirm {
---             behavior = cmp.ConfirmBehavior.Insert,
---             select = true,
---           },
--- 
---           -- Manually trigger a completion from nvim-cmp.
---           --  Generally you don't need this, because nvim-cmp will display
---           --  completions whenever it has completion options available.
---           ['<C-Space>'] = cmp.mapping.complete {},
--- 
---           sources = {
---             default = { 'lsp', 'path', 'snippets', 'lazydev' },
---           },
---     
---           snippets = { preset = 'luasnip' },
---     
---           -- Blink.cmp includes an optional, recommended rust fuzzy matcher,
---           -- which automatically downloads a prebuilt binary when enabled.
---           --
---           -- By default, we use the Lua implementation instead, but you may enable
---           -- the rust implementation via `'prefer_rust_with_warning'`
---           --
---           -- See :h blink-cmp-config-fuzzy for more information
---           fuzzy = { implementation = 'lua' },
---     
---           -- Shows a signature help window while you type arguments for a function
---           signature = { enabled = true },
---     
---           -- Keymaps for snippet navigation (similar to your old config)
---           keymap = {
---             preset = 'default',
---             ['<C-l>'] = { 'snippet_forward', 'fallback' },
---             ['<C-h>'] = { 'snippet_backward', 'fallback' },
---           },
---         },
---   },
+  --   { -- Autocompletion
+  --     'hrsh7th/nvim-cmp',
+  --     event = 'InsertEnter',
+  --     dependencies = { -- Snippet Engine & its associated nvim-cmp source
+  --       {
+  --         'L3MON4D3/LuaSnip',
+  --         build = (function()
+  --           -- Build Step is needed for regex support in snippets.
+  --           -- This step is not supported in many windows environments.
+  --           -- Remove the below condition to re-enable on windows.
+  --           if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then return end
+  --           return 'make install_jsregexp'
+  --         end)(),
+  --         dependencies = {
+  --           -- `friendly-snippets` contains a variety of premade snippets.
+  --           --    See the README about individual language/framework/plugin snippets:
+  --           --    https://github.com/rafamadriz/friendly-snippets
+  --           {
+  --             'rafamadriz/friendly-snippets',
+  --             config = function()
+  --               require('luasnip.loaders.from_vscode').lazy_load()
+  --             end,
+  --           },
+  --         },
+  --       },
+  --       'saadparwaiz1/cmp_luasnip', -- Adds other completion capabilities.
+  --       --  nvim-cmp does not ship with all sources by default. They are split
+  --       --  into multiple repos for maintenance purposes.
+  --       'hrsh7th/cmp-nvim-lsp',
+  --       'hrsh7th/cmp-path',
+  --       'hrsh7th/cmp-nvim-lsp-signature-help',
+  --     },
+  --     config = function()
+  --       -- See `:help cmp`
+  --       local cmp = require 'cmp'
+  --       local luasnip = require 'luasnip'
+  --       luasnip.config.setup {}
+  --
+  --       cmp.setup {
+  --         snippet = {
+  --           expand = function(args)
+  --             luasnip.lsp_expand(args.body)
+  --           end,
+  --         },
+  --         completion = {
+  --           completeopt = 'menu,menuone,noinsert',
+  --         },
+  --
+  --         -- For an understanding of why these mappings were
+  --         -- chosen, you will need to read `:help ins-completion`
+  --         --
+  --         -- No, but seriously. Please read `:help ins-completion`, it is really good!
+  --         mapping = cmp.mapping.preset.insert {
+  --           -- Select the [n]ext item
+  --           ['<C-n>'] = cmp.mapping.select_next_item(),
+  --           -- Select the [p]revious item
+  --           ['<C-p>'] = cmp.mapping.select_prev_item(),
+  --
+  --           -- Scroll the documentation window [b]ack / [f]orward
+  --           ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+  --           ['<C-u>'] = cmp.mapping.scroll_docs(4),
+  --
+  --           -- Accept ([y]es) the completion.
+  --           --  This will auto-import if your LSP supports it.
+  --           --  This will expand snippets if the LSP sent a snippet.
+  --           ['<C-y>'] = cmp.mapping.confirm {
+  --             select = true,
+  --           },
+  --           ['<CR>'] = cmp.mapping.confirm {
+  --             behavior = cmp.ConfirmBehavior.Insert,
+  --             select = true,
+  --           },
+  --
+  --           -- Manually trigger a completion from nvim-cmp.
+  --           --  Generally you don't need this, because nvim-cmp will display
+  --           --  completions whenever it has completion options available.
+  --           ['<C-Space>'] = cmp.mapping.complete {},
+  --
+  --           sources = {
+  --             default = { 'lsp', 'path', 'snippets', 'lazydev' },
+  --           },
+  --
+  --           snippets = { preset = 'luasnip' },
+  --
+  --           -- Blink.cmp includes an optional, recommended rust fuzzy matcher,
+  --           -- which automatically downloads a prebuilt binary when enabled.
+  --           --
+  --           -- By default, we use the Lua implementation instead, but you may enable
+  --           -- the rust implementation via `'prefer_rust_with_warning'`
+  --           --
+  --           -- See :h blink-cmp-config-fuzzy for more information
+  --           fuzzy = { implementation = 'lua' },
+  --
+  --           -- Shows a signature help window while you type arguments for a function
+  --           signature = { enabled = true },
+  --
+  --           -- Keymaps for snippet navigation (similar to your old config)
+  --           keymap = {
+  --             preset = 'default',
+  --             ['<C-l>'] = { 'snippet_forward', 'fallback' },
+  --             ['<C-h>'] = { 'snippet_backward', 'fallback' },
+  --           },
+  --         },
+  --   },
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
@@ -1276,10 +1261,10 @@ require('lazy').setup({
         'rust',
         'solidity',
       },
-      
+
       -- Autoinstall languages that are not installed
       auto_install = true,
-      
+
       highlight = {
         enable = true,
         -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
@@ -1287,12 +1272,12 @@ require('lazy').setup({
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
         additional_vim_regex_highlighting = { 'ruby' },
       },
-      
+
       indent = {
         enable = true,
         disable = { 'ruby' },
       },
-      
+
       incremental_selection = {
         enable = true,
         keymaps = {
@@ -1356,4 +1341,3 @@ require('lazy').setup({
 
 -- the line beneath this is called `modeline`. see `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
-
