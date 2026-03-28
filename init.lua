@@ -352,6 +352,10 @@ require('lazy').setup({
 
       -- Document existing key chains
       spec = {
+        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
+        { '<leader>d', group = '[D]ocument' },
+        { '<leader>r', group = '[R]ename' },
+        { '<leader>w', group = '[W]orkspace' },
         { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
@@ -640,44 +644,86 @@ require('lazy').setup({
       ---@type table<string, vim.lsp.Config>
       local servers = {
         -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-
-        stylua = {}, -- Used to format Lua code
-
-        -- Special Lua Config, as recommended by neovim help docs
-        lua_ls = {
-          on_init = function(client)
-            if client.workspace_folders then
-              local path = client.workspace_folders[1].name
-              if path ~= vim.fn.stdpath 'config' and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc')) then return end
-            end
-
-            client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-              runtime = {
-                version = 'LuaJIT',
-                path = { 'lua/?.lua', 'lua/?/init.lua' },
-              },
-              workspace = {
-                checkThirdParty = false,
-                -- NOTE: this is a lot slower and will cause issues when working on your own configuration.
-                --  See https://github.com/neovim/nvim-lspconfig/issues/3189
-                library = vim.tbl_extend('force', vim.api.nvim_get_runtime_file('', true), {
-                  '${3rd}/luv/library',
-                  '${3rd}/busted/library',
-                }),
-              },
-            })
-          end,
+        gopls = {},
+        solidity_ls = {
+          root_dir = require('lspconfig').util.root_pattern('foundry.toml', 'hardhat.config.js', 'truffle-config.js', '.git'),
+          filetypes = { 'solidity', 'sol' },
           settings = {
-            Lua = {},
+            solidity = {
+              format = {
+                enabled = true,
+                style = 'google',
+              },
+            },
+          },
+        },
+        pyright = {},
+        eslint = {},
+        html = {},
+        cssls = {},
+        tailwindcss = {
+          filetypes = {
+            'templ',
+            'vue',
+            'html',
+            'astro',
+            'javascript',
+            'typescript',
+            'react',
+            'html',
+            'javascriptreact',
+            'typescriptreact',
+            'svelte',
+            'css',
+          },
+          settings = {
+            tailwindCSS = {
+              experimental = {
+                classRegex = {
+                  'class="([^"]*)"',
+                  'className="([^"]*)"',
+                  'class: "([^"]*)"',
+                  'class\\s*=\\s*{([^}]*)}',
+                  '\\bclass\\s*=\\s*"([^"]*)"',
+                },
+              },
+            },
+          },
+        },
+        ts_ls = {
+          settings = {
+            typescript = {
+              inlayHints = {
+                includeInlayParameterNameHints = 'all',
+                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayEnumMemberValueHints = true,
+              },
+            },
+            javascript = {
+              inlayHints = {
+                includeInlayParameterNameHints = 'all',
+                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayEnumMemberValueHints = true,
+              },
+            },
+          },
+        },
+        stylua = {},
+        lua_ls = {
+          settings = {
+            Lua = {
+              completion = {
+                callSnippet = 'Replace',
+              },
+            },
           },
         },
       }
@@ -691,10 +737,20 @@ require('lazy').setup({
       -- You can press `g?` for help in this menu.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        -- You can add other tools here that you want Mason to install
+        'lua_ls',
+        'stylua',
+        'prettier',
+        'prettierd',
+        'eslint_d',
+        'typescript-language-server',
+        'tailwindcss-language-server',
+        'css-lsp',
+        'html-lsp',
       })
 
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+      require('mason-tool-installer').setup {
+        ensure_installed = ensure_installed,
+      }
 
       for name, server in pairs(servers) do
         vim.lsp.config(name, server)
@@ -735,11 +791,21 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        go = { 'gofmt', 'gofumpt' },
+        typescript = { 'eslint_d', 'prettier' },
+        javascript = { 'prettier' },
+        typescriptreact = { 'prettier' },
+        javascriptreact = { 'prettier' },
+        html = { 'eslint_d', 'prettier', 'prettierd' },
+        css = { 'prettier' },
+        scss = { 'prettier', 'eslint_d', 'prettierd' },
+        ['typescript.angular'] = { 'eslint_d', 'prettier', 'prettierd' },
+        ['html.angular'] = { 'eslint_d', 'prettierd', 'prettier' },
+        json = { 'prettier' },
+        jsonc = { 'prettier' },
+        markdown = { 'prettier' },
+        yaml = { 'prettier' },
+        ['*'] = { 'prettierd', 'eslint_d', 'prettier' },
       },
     },
   },
