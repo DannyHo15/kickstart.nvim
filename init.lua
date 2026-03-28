@@ -90,8 +90,27 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+-- Avante Git Commit Prompt
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'ToggleGitCommitPrompt',
+  callback = function()
+    require('avante.config').override {
+      system_prompt = 'Create a commit message for the staged changes following the commitizen convention. Ensure the title is concise (max 50 characters), and the message is wrapped at 72 characters. Format the entire message in a code block with language set to `gitcommit`.',
+    }
+  end,
+})
+
+vim.keymap.set('n', '<leader>ag', function()
+  vim.api.nvim_exec_autocmds('User', { pattern = 'ToggleGitCommitPrompt' })
+end, { desc = 'avante: toggle my prompt' })
+
+-- Set to true if you have a Nerd Font installed
+vim.g.have_nerd_font = true
+
+-- Set LSP log level (options: 'trace', 'debug', 'info', 'warn', 'error', 'off')
+vim.lsp.set_log_level 'warn'
+
+vim.g.lazydev_enabled = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -122,6 +141,9 @@ vim.o.breakindent = true
 -- Enable undo/redo changes even after closing and reopening a file
 vim.o.undofile = true
 
+-- Hide command characters (like /) from showing
+vim.o.showcmd = false
+
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.o.ignorecase = true
 vim.o.smartcase = true
@@ -149,6 +171,14 @@ vim.o.splitbelow = true
 --   and `:help lua-guide-options`
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.o.expandtab = true
+vim.o.tabstop = 2
+vim.o.shiftwidth = 2
+vim.o.smartindent = true
+vim.o.relativenumber = true
+vim.o.swapfile = false
+vim.opt.ttyfast = true
+vim.opt.lazyredraw = false
 
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
@@ -157,12 +187,14 @@ vim.o.inccommand = 'split'
 vim.o.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
+vim.o.scroll = 10
 vim.o.scrolloff = 10
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
 -- See `:help 'confirm'`
 vim.o.confirm = true
+vim.o.laststatus = 3
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -187,6 +219,9 @@ vim.diagnostic.config {
   jump = { float = true },
 }
 
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
