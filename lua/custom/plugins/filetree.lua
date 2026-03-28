@@ -302,6 +302,5 @@ return {
     }
 
     vim.cmd [[nnoremap \ :Neotree reveal<cr>]]
-    vim.keymap.set('n', '<C-b>', '<cmd>Neotree toggle<CR>')
   end,
 }
