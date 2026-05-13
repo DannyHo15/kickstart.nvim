@@ -11,3 +11,4 @@ lazy-lock.json
 
 .DS_Store
 .omc
+.env.secrets

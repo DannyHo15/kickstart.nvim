@@ -6,6 +6,15 @@ return {
   },
   build = 'npm install -g mcp-hub@latest', -- Installs core MCP Hub server
   config = function()
+    -- Load secrets from .env.secrets
+    local env_file = vim.fn.expand '~/.config/nvim/.env.secrets'
+    for line in io.lines(env_file) do
+      local key, value = line:match '^%s*([%w_]+)%s*=%s*(.+)%s*$'
+      if key and value then
+        vim.env[key] = value
+      end
+    end
+
     require('mcphub').setup {
       -- Required configuration
       port = 3333, -- Default hub port

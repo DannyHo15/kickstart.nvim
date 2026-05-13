@@ -7,7 +7,7 @@
       "args": [
         "-y",
         "@21st-dev/magic@latest",
-        "API_KEY=\"999c821430619673032af588c28433d37c3785e1e5d0ece8173c1bb701b8c0b2\""
+        "API_KEY=\"${MAGIC_21ST_API_KEY}\""
       ],
       "command": "npx"
     },
@@ -17,7 +17,7 @@
       "env": {
         "JIRA_URL": "https://metagrit.atlassian.net",
         "JIRA_USERNAME": "danh.ho.thanh@metagrit.asia",
-        "JIRA_API_TOKEN": "<YOUR_JIRA_API_TOKEN>"
+        "JIRA_API_TOKEN": "${JIRA_API_TOKEN}"
       }
     },
     "antd-components-local": {
@@ -103,7 +103,7 @@
       "args": [
         "-y",
         "figma-developer-mcp",
-        "--figma-api-key=figd_FalggR3pnhkukVy1yzS-4GLppVVlHxEfFm1VEItx",
+        "--figma-api-key=${FIGMA_API_KEY}",
         "--stdio"
       ],
       "autoApprove": ["get_figma_data", "download_figma_images"],
