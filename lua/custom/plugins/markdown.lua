@@ -1,8 +1,10 @@
 return {
   'iamcco/markdown-preview.nvim',
   cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+  init = function()
+    vim.g.mkdp_command_for_global = 1
+  end,
   build = function()
-    require('lazy').load { plugins = { 'markdown-preview.nvim' } }
     vim.fn['mkdp#util#install']()
   end,
   keys = {

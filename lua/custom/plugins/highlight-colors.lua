@@ -1,7 +1,7 @@
 return {
   'brenoprata10/nvim-highlight-colors',
   version = '*',
-  connfig = function()
+  config = function()
     vim.opt.termguicolors = true
     require('nvim-highlight-colors').setup {
       ---Render style

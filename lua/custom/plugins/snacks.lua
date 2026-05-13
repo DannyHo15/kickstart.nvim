@@ -11,15 +11,10 @@ return {
     words = { enabled = false },
     dashboard = { enabled = false },
     explorer = { enabled = false },
-    input = {
-      enabled = true,
-      win = {
-        -- Ensure suggestions appear above command line
-        zindex = 300, -- Increased from 200 to avoid overlap with cmdline
-      },
-    },
+    input = { enabled = false }, -- dressing.nvim owns vim.ui.input
     picker = {
       enabled = true,
+      ui_select = false, -- dressing.nvim owns vim.ui.select
       previewers = {
         diff = {
           style = 'syntax',

@@ -32,7 +32,11 @@ return {
       auto_toggle_mcp_servers = true, -- Let LLMs start and stop MCP servers automatically
       extensions = {
         avante = {
+          enabled = true,
           make_slash_commands = true, -- make /slash commands from MCP server prompts
+        },
+        copilotchat = {
+          enabled = false, -- Avoid duplicate MCP function registration prompts in CopilotChat.
         },
       },
     }
