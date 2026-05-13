@@ -6,7 +6,7 @@ return {
   lazy = false,
   opts = {
     bigfile = { enabled = false },
-    notifier = { enabled = false },
+    notifier = { enabled = true },
     quickfile = { enabled = true },
     words = { enabled = false },
     dashboard = { enabled = false },
@@ -18,29 +18,32 @@ return {
         zindex = 300, -- Increased from 200 to avoid overlap with cmdline
       },
     },
-    picker = { enabled = false },
+    picker = {
+      enabled = true,
+      previewers = {
+        diff = {
+          style = 'syntax',
+        },
+      },
+    },
     scope = { enabled = false },
     scroll = { enabled = true },
     statuscolumn = { enabled = false },
-    terminal = {},
+    terminal = { enabled = true },
     toggle = { enabled = false },
     lazygit = { enabled = true },
-    image = { enabled = true },
+    image = { enabled = true, force = true },
   },
   keys = {
-    {
-      '<leader>tt',
-      function() require('snacks').terminal() end,
-      desc = 'Toggle Terminal',
-    },
-    {
-      '<leader>tf',
-      function()
-        require('snacks').terminal(nil, {
-          cwd = vim.fn.expand '%:p:h',
-        })
-      end,
-      desc = 'Terminal in current file directory',
-    },
+    { '<leader>n', function() Snacks.picker.notifications() end, desc = 'Notification History' },
+    { '<leader>gg', function() Snacks.lazygit() end, desc = 'Lazygit' },
+    { '<leader>:', function() Snacks.picker.command_history() end, desc = 'Command History' },
+    { '<leader>gb', function() Snacks.picker.git_branches() end, desc = 'Git Branches' },
+    { '<leader>gl', function() Snacks.picker.git_log() end, desc = 'Git Log' },
+    { '<leader>gL', function() Snacks.picker.git_log_line() end, desc = 'Git Log Line' },
+    { '<leader>gs', function() Snacks.picker.git_status() end, desc = 'Git Status' },
+    { '<leader>gS', function() Snacks.picker.git_stash() end, desc = 'Git Stash' },
+    { '<leader>gd', function() Snacks.picker.git_diff() end, desc = 'Git Diff (Hunks)' },
+    { '<leader>gf', function() Snacks.picker.git_log_file() end, desc = 'Git Log File' },
   },
 }

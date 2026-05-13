@@ -108,7 +108,7 @@ end, { desc = 'avante: toggle my prompt' })
 vim.g.have_nerd_font = true
 
 -- Set LSP log level (options: 'trace', 'debug', 'info', 'warn', 'error', 'off')
-vim.lsp.set_log_level 'warn'
+vim.lsp.log.set_level 'warn'
 
 vim.g.lazydev_enabled = true
 
@@ -224,13 +224,9 @@ vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagn
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
---
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('t', '<leader><Esc>', '<C-\\><C-n>', {
+  desc = 'Exit terminal mode',
+})
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -791,23 +787,40 @@ require('lazy').setup({
             lsp_format = 'fallback',
           }
         end
+        return {
+          timeout_ms = 5000,
+          lsp_format = lsp_format_opt,
+        }
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
         go = { 'gofmt', 'gofumpt' },
-        typescript = { 'prettierd', 'prettier', stop_after_first = true },
-        javascript = { 'prettierd', 'prettier', stop_after_first = true },
-        typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
-        javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
-        html = { 'prettierd', 'prettier', stop_after_first = true },
-        css = { 'prettierd', 'prettier', stop_after_first = true },
-        scss = { 'prettierd', 'prettier', stop_after_first = true },
-        ['typescript.angular'] = { 'prettierd', 'prettier', stop_after_first = true },
-        ['html.angular'] = { 'prettierd', 'prettier', stop_after_first = true },
-        json = { 'prettierd', 'prettier', stop_after_first = true },
-        jsonc = { 'prettierd', 'prettier', stop_after_first = true },
-        markdown = { 'prettierd', 'prettier', stop_after_first = true },
-        yaml = { 'prettierd', 'prettier', stop_after_first = true },
+        -- TypeScript/JavaScript
+        typescript = { 'prettier' },
+        javascript = { 'prettier' },
+        typescriptreact = { 'prettier' },
+        javascriptreact = { 'prettier' },
+        -- HTML/CSS
+        html = { 'prettier', 'prettierd' },
+        css = { 'prettier' },
+        scss = { 'prettier', 'prettierd' },
+        -- Angular
+        ['typescript.angular'] = { 'prettier', 'prettierd' },
+        ['html.angular'] = { 'prettierd', 'prettier' },
+        -- JSON
+        json = { 'prettier' },
+        jsonc = { 'prettier' },
+        -- Other
+        markdown = { 'prettier' },
+        yaml = { 'prettier' },
+        -- Catch all
+        ['*'] = { 'prettierd', 'prettier' },
+      },
+      formatters = {
+        eslint_d = {
+          condition = function(utils) return utils.root_has_file { '.eslintrc.js', '.eslintrc.json', 'eslint.config.js' } end,
+          timeout_ms = 10000,
+        },
       },
     },
   },

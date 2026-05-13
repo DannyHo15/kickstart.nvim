@@ -1,5 +1,8 @@
 {
   "mcpServers": {
+    "Inkeep MCP": {
+      "url": "https://mcp.inkeep.com/recallai/mcp"
+    },
     "@21st-dev/magic": {
       "args": [
         "-y",
@@ -7,6 +10,15 @@
         "API_KEY=\"999c821430619673032af588c28433d37c3785e1e5d0ece8173c1bb701b8c0b2\""
       ],
       "command": "npx"
+    },
+    "mcp-atlassian": {
+      "command": "uvx",
+      "args": ["mcp-atlassian"],
+      "env": {
+        "JIRA_URL": "https://metagrit.atlassian.net",
+        "JIRA_USERNAME": "danh.ho.thanh@metagrit.asia",
+        "JIRA_API_TOKEN": "<YOUR_JIRA_API_TOKEN>"
+      }
     },
     "antd-components-local": {
       "args": ["antd-mcp"],

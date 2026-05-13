@@ -9,11 +9,22 @@ return {
     'sources.default',
   },
   dependencies = {
-    'rafamadriz/friendly-snippets',
-    -- add blink.compat to dependencies
+    {
+      'L3MON4D3/LuaSnip',
+      build = (function()
+        if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then return end
+        return 'make install_jsregexp'
+      end)(),
+      dependencies = {
+        'rafamadriz/friendly-snippets',
+        config = function()
+          require('luasnip.loaders.from_vscode').lazy_load()
+        end,
+      },
+    },
     {
       'saghen/blink.compat',
-      optional = true, -- make optional so it's only enabled if any extras need it
+      optional = true,
       opts = {},
       version = not vim.g.lazyvim_blink_main and '*',
     },
@@ -24,7 +35,7 @@ return {
   ---@type blink.cmp.Config
   opts = {
     snippets = {
-      preset = 'default',
+      preset = 'luasnip',
     },
 
     appearance = {
@@ -86,6 +97,11 @@ return {
 
     keymap = {
       preset = 'enter',
+      ['<CR>'] = { 'accept', 'fallback' },
+      ['<Tab>'] = { 'select_next', 'fallback' },
+      ['<S-Tab>'] = { 'select_prev', 'fallback' },
+      ['<C-n>'] = { 'select_next', 'fallback' },
+      ['<C-p>'] = { 'select_prev', 'fallback' },
       ['<C-y>'] = { 'select_and_accept' },
     },
   },
